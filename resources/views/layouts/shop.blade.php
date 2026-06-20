@@ -47,7 +47,7 @@
         .fruite-item, .vesitable-item { transition: box-shadow .25s, transform .25s; }
         .fruite-item:hover, .vesitable-item:hover { transform: translateY(-3px); }
 
-        /* Custom pagination — override Fruitables' .pagination a */
+        /* Custom pagination — override FruGo' .pagination a */
         .pagination { display: flex !important; flex-wrap: wrap; gap: 4px; list-style: none; padding: 0; margin: 0; justify-content: center; }
         .pagination .page-item .page-link,
         .pagination a {

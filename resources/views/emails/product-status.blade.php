@@ -23,12 +23,12 @@
     @if($status === 'approved')
     <div class="header header-approved">
         <h1>✅ Product Approved!</h1>
-        <p>Your product is now live on Fruitables</p>
+        <p>Your product is now live on FruGo</p>
     </div>
     <div class="body">
         <p style="color:#333;font-size:16px;margin:0 0 4px;">Congratulations!</p>
         <p style="color:#555;line-height:1.6;">
-            Your product <strong>"{{ $product->title }}"</strong> has been <strong style="color:#86B817;">approved</strong> and is now visible to customers in the Fruitables shop.
+            Your product <strong>"{{ $product->title }}"</strong> has been <strong style="color:#86B817;">approved</strong> and is now visible to customers in the FruGo shop.
         </p>
 
         <div class="product-card">
@@ -77,7 +77,7 @@
     </div>
     @endif
     <div class="footer">
-        &copy; {{ date('Y') }} Fruitables &mdash; This is an automated notification.
+        &copy; {{ date('Y') }} FruGo &mdash; This is an automated notification.
     </div>
 </div>
 </body>

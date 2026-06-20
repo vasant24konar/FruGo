@@ -20,7 +20,7 @@
 <body>
 <div class="wrapper">
     <div class="header">
-        <h1>🍎 Fruitables — Admin Review Required</h1>
+        <h1>🍎 FruGo — Admin Review Required</h1>
         <p>A product has been submitted for your approval</p>
     </div>
     <div class="body">
@@ -52,7 +52,7 @@
         <a href="{{ config('app.url') }}/dashboard" class="btn">Review in Dashboard →</a>
     </div>
     <div class="footer">
-        &copy; {{ date('Y') }} Fruitables &mdash; This is an automated notification.
+        &copy; {{ date('Y') }} FruGo &mdash; This is an automated notification.
     </div>
 </div>
 </body>

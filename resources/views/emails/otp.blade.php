@@ -18,7 +18,7 @@
 <body>
 <div class="wrapper">
     <div class="header">
-        <h1>🍎 Fruitables</h1>
+        <h1>🍎 FruGo</h1>
         <p>Fresh Fruits &amp; Vegetables</p>
     </div>
     <div class="body">
@@ -40,7 +40,7 @@
         </p>
     </div>
     <div class="footer">
-        &copy; {{ date('Y') }} Fruitables. All rights reserved.<br>
+        &copy; {{ date('Y') }} FruGo. All rights reserved.<br>
         Fresh fruits &amp; vegetables delivered to your door.
     </div>
 </div>

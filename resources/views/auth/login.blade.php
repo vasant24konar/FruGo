@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In — Fruitables</title>
+    <title>Sign In — FruGo</title>
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +46,7 @@
     <div class="container px-0">
         <nav class="navbar navbar-light bg-white navbar-expand-xl">
             <a href="{{ route('shop.index') }}" class="navbar-brand">
-                <h1 class="text-primary display-6">Fruitables</h1>
+                <h1 class="text-primary display-6">FruGo</h1>
             </a>
             <div class="d-flex m-3 me-0">
                 <a href="{{ route('shop.index') }}" class="btn border border-secondary rounded-pill px-3 text-primary">
@@ -164,7 +164,7 @@
     <div class="container py-5">
         <div class="row g-5">
             <div class="col-lg-4 col-md-6">
-                <h4 class="text-light mb-3">Fruitables</h4>
+                <h4 class="text-light mb-3">FruGo</h4>
                 <p>Fresh fruits & vegetables delivered from farm to your door.</p>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -181,7 +181,7 @@
 </div>
 <div class="container-fluid copyright bg-dark py-4">
     <div class="container text-center">
-        <span class="text-light"><i class="fas fa-copyright text-light me-2"></i>Fruitables &copy; {{ date('Y') }}, All rights reserved.</span>
+        <span class="text-light"><i class="fas fa-copyright text-light me-2"></i>FruGo &copy; {{ date('Y') }}, All rights reserved.</span>
     </div>
 </div>
 <!-- Footer End -->
