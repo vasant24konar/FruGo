@@ -32,7 +32,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="text-end fw-bold">Total</td>
-                                <td class="text-end fw-bold fs-5" style="color:var(--primary)">${{ number_format($order->total, 2) }}</td>
+                                <td class="text-end fw-bold fs-5" style="color:var(--bs-primary)">${{ number_format($order->total, 2) }}</td>
                             </tr>
                         </tfoot>
                     </table>

@@ -5,13 +5,13 @@
 <div class="container py-5">
 
     <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <a href="{{ route('products.index') }}" class="text-decoration-none" style="color:var(--primary)">
+        <a href="{{ route('products.index') }}" class="text-decoration-none" style="color:var(--bs-primary)">
             <i class="fa fa-arrow-left me-1"></i>All Products
         </a>
         @if(auth()->user()->isAdmin() || $product->created_by === auth()->id())
         <div class="d-flex gap-2">
             <a href="{{ route('products.edit', $product) }}"
-               class="btn btn-sm fw-semibold" style="background:var(--primary);color:#fff">
+               class="btn btn-sm fw-semibold" style="background:var(--bs-primary);color:#fff">
                 <i class="fa fa-edit me-1"></i>Edit
             </a>
             <form method="POST" action="{{ route('products.destroy', $product) }}"
@@ -38,14 +38,14 @@
                     <div class="d-flex align-items-start justify-content-between mb-3">
                         <h2 class="fw-bold mb-0" style="font-family:'Raleway',sans-serif">{{ $product->title }}</h2>
                         @if($product->category)
-                            <span class="badge ms-2 flex-shrink-0" style="background:var(--primary);font-size:.78rem">{{ ucfirst($product->category) }}</span>
+                            <span class="badge ms-2 flex-shrink-0" style="background:var(--bs-primary);font-size:.78rem">{{ ucfirst($product->category) }}</span>
                         @endif
                     </div>
 
                     <div class="row g-3 mb-4">
                         <div class="col-4">
                             <div class="text-muted small mb-1">Price</div>
-                            <div class="fw-bold fs-5" style="color:var(--primary)">{{ $product->currency === 'INR' ? '₹' : '$' }}{{ number_format((float)$product->price, 2) }}</div>
+                            <div class="fw-bold fs-5" style="color:var(--bs-primary)">{{ $product->currency === 'INR' ? '₹' : '$' }}{{ number_format((float)$product->price, 2) }}</div>
                         </div>
                         <div class="col-4">
                             <div class="text-muted small mb-1">Stock</div>

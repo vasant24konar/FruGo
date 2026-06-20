@@ -8,11 +8,11 @@
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
         <div>
             <h2 class="fw-bold mb-1" style="font-family:'Raleway',sans-serif">
-                <i class="fa fa-chart-line me-2" style="color:var(--primary)"></i>Manager Dashboard
+                <i class="fa fa-chart-line me-2" style="color:var(--bs-primary)"></i>Manager Dashboard
             </h2>
             <p class="text-muted small mb-0">Welcome back, {{ auth()->user()->name }} &mdash; {{ ucfirst(str_replace('_',' ', auth()->user()->role)) }}</p>
         </div>
-        <a href="{{ route('products.create') }}" class="btn fw-semibold" style="background:var(--primary);color:#fff;border-radius:.6rem">
+        <a href="{{ route('products.create') }}" class="btn fw-semibold" style="background:var(--bs-primary);color:#fff;border-radius:.6rem">
             <i class="fa fa-plus me-1"></i>Add Product
         </a>
     </div>
@@ -48,14 +48,14 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm" style="border-radius:.85rem">
                 <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex align-items-center gap-2">
-                    <i class="fa fa-truck" style="color:var(--primary)"></i>
+                    <i class="fa fa-truck" style="color:var(--bs-primary)"></i>
                     <h6 class="mb-0 fw-bold" style="font-family:'Raleway',sans-serif">Orders to Dispatch</h6>
-                    <span class="badge ms-auto" style="background:var(--primary)">{{ $pendingOrders->count() }}</span>
+                    <span class="badge ms-auto" style="background:var(--bs-primary)">{{ $pendingOrders->count() }}</span>
                 </div>
                 <div class="card-body p-0">
                     @if($pendingOrders->isEmpty())
                         <div class="text-center py-5 text-muted">
-                            <i class="fa fa-check-circle fa-2x mb-2" style="color:var(--primary)"></i>
+                            <i class="fa fa-check-circle fa-2x mb-2" style="color:var(--bs-primary)"></i>
                             <p class="mb-0">All orders dispatched!</p>
                         </div>
                     @else
@@ -90,7 +90,7 @@
                                             <option value="completed"  {{ $order->status==='completed'  ? 'selected' : '' }}>Completed</option>
                                             <option value="cancelled"  {{ $order->status==='cancelled'  ? 'selected' : '' }}>Cancelled</option>
                                         </select>
-                                        <button class="btn btn-sm fw-semibold" style="background:var(--primary);color:#fff;white-space:nowrap">
+                                        <button class="btn btn-sm fw-semibold" style="background:var(--bs-primary);color:#fff;white-space:nowrap">
                                             Update
                                         </button>
                                     </form>

@@ -7,7 +7,7 @@
     <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
         <div>
             <h2 class="fw-bold mb-1" style="font-family:'Raleway',sans-serif">
-                <i class="fa fa-box-open me-2" style="color:var(--primary)"></i>Products
+                <i class="fa fa-box-open me-2" style="color:var(--bs-primary)"></i>Products
             </h2>
             <p class="text-muted small mb-0">{{ $products->total() }} product{{ $products->total() !== 1 ? 's' : '' }} total</p>
         </div>
@@ -45,7 +45,7 @@
             <i class="fa fa-box-open fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">{{ $search ? 'No products match your search.' : 'No products yet.' }}</h5>
             @if(!$search)
-                <a href="{{ route('products.create') }}" class="btn mt-2 fw-semibold" style="background:var(--primary);color:#fff">Add First Product</a>
+                <a href="{{ route('products.create') }}" class="btn mt-2 fw-semibold" style="background:var(--bs-primary);color:#fff">Add First Product</a>
             @endif
         </div>
     @else
@@ -85,7 +85,7 @@
                             <span class="text-muted small">—</span>
                         @endif
                     </td>
-                    <td class="fw-semibold" style="color:var(--primary)">${{ number_format((float)$product->price, 2) }}</td>
+                    <td class="fw-semibold" style="color:var(--bs-primary)">${{ number_format((float)$product->price, 2) }}</td>
                     <td>
                         @if($product->stock == 0)
                             <span class="badge bg-danger">Out of stock</span>
@@ -113,7 +113,7 @@
                                class="btn btn-sm btn-outline-secondary" style="font-size:.78rem">View</a>
                             @if(auth()->user()->isAdmin() || $product->created_by === auth()->id())
                             <a href="{{ route('products.edit', $product) }}"
-                               class="btn btn-sm" style="background:var(--primary);color:#fff;font-size:.78rem">Edit</a>
+                               class="btn btn-sm" style="background:var(--bs-primary);color:#fff;font-size:.78rem">Edit</a>
                             @if($product->isRejected() && $product->created_by === auth()->id())
                             <form method="POST" action="{{ route('products.submit', $product) }}">
                                 @csrf
