@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -35,7 +36,12 @@ class ProductController extends Controller
 
     public function store(ProductRequest $request): RedirectResponse
     {
-        $product = $this->productService->createProduct($request->validated());
+        $data = $request->validated();
+        unset($data['image']);
+        if ($path = $this->storeImage($request)) {
+            $data['image_path'] = $path;
+        }
+        $product = $this->productService->createProduct($data);
 
         if ($product->isPending()) {
             $this->notifyAdminsOfSubmission($product);
@@ -66,7 +72,12 @@ class ProductController extends Controller
         $this->authorizeModification($product);
 
         $wasRejected = $product->isRejected();
-        $this->productService->updateProduct($product, $request->validated());
+        $data = $request->validated();
+        unset($data['image']);
+        if ($path = $this->storeImage($request)) {
+            $data['image_path'] = $path;
+        }
+        $this->productService->updateProduct($product, $data);
         $product->refresh();
 
         if ($wasRejected && $product->isPending()) {
@@ -149,6 +160,15 @@ class ProductController extends Controller
         $this->notifyAdminsOfSubmission($product);
 
         return back()->with('success', 'Product resubmitted for approval. Admin will review it shortly.');
+    }
+
+    private function storeImage(Request $request): ?string
+    {
+        if (! $request->hasFile('image') || ! $request->file('image')->isValid()) {
+            return null;
+        }
+        $path = $request->file('image')->store('products', 'public');
+        return 'storage/' . $path;
     }
 
     private function authorizeModification(Product $product): void

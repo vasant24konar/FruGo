@@ -23,6 +23,7 @@ class Product extends Model
         'category',
         'description',
         'price',
+        'currency',
         'stock',
         'image_path',
         'date_available',

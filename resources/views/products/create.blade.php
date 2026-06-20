@@ -20,7 +20,7 @@
                     <h6 class="mb-0 text-white fw-bold"><i class="fa fa-leaf me-2"></i>Product Details</h6>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('products.store') }}">
+                    <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data">
                         @csrf
                         @include('products._form')
                         <div class="d-flex justify-content-end gap-2 pt-2 mt-3 border-top">

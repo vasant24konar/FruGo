@@ -20,7 +20,7 @@
                     <h6 class="mb-0 text-white fw-bold"><i class="fa fa-leaf me-2"></i>{{ $product->title }}</h6>
                 </div>
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('products.update', $product) }}">
+                    <form method="POST" action="{{ route('products.update', $product) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         @include('products._form')

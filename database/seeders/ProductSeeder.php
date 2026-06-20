@@ -12,8 +12,8 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        $manager = User::where('email', 'manager@example.com')->first()
-                 ?? User::where('role', 'admin')->first();
+        $admin   = User::where('role', 'admin')->first();
+        $manager = User::where('email', 'manager@example.com')->first() ?? $admin;
 
         $products = [
             ['title' => 'Fresh Red Apples',      'category' => 'fruits',     'price' => 3.99,  'stock' => 200, 'description' => '<p>Crisp, sweet red apples freshly harvested from local orchards. Rich in fibre and vitamins.</p>', 'date_available' => '2024-01-01'],
@@ -33,7 +33,12 @@ class ProductSeeder extends Seeder
         foreach ($products as $data) {
             Product::firstOrCreate(
                 ['title' => $data['title']],
-                array_merge($data, ['created_by' => $manager->id])
+                array_merge($data, [
+                    'created_by'  => $manager->id,
+                    'status'      => 'approved',
+                    'approved_by' => $admin->id,
+                    'approved_at' => now(),
+                ])
             );
         }
     }

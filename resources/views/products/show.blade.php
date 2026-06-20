@@ -45,7 +45,7 @@
                     <div class="row g-3 mb-4">
                         <div class="col-4">
                             <div class="text-muted small mb-1">Price</div>
-                            <div class="fw-bold fs-5" style="color:var(--primary)">${{ number_format((float)$product->price, 2) }}</div>
+                            <div class="fw-bold fs-5" style="color:var(--primary)">{{ $product->currency === 'INR' ? '₹' : '$' }}{{ number_format((float)$product->price, 2) }}</div>
                         </div>
                         <div class="col-4">
                             <div class="text-muted small mb-1">Stock</div>
