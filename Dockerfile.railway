@@ -23,4 +23,4 @@ RUN composer dump-autoload --optimize --no-dev \
 
 EXPOSE 8080
 
-CMD ["/bin/sh", "-c", "env | grep -E '^(APP_|ASSET_|DB_|MAIL_|SESSION_|CACHE_|QUEUE_)' > /var/www/.env && php artisan config:clear && php artisan storage:link --no-interaction 2>/dev/null; php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan db:seed --force --class=ProductSeeder && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+CMD ["/bin/sh", "-c", "env | grep -E '^(APP_|ASSET_|DB_|MAIL_|SESSION_|CACHE_|QUEUE_)' > /var/www/.env && printf '\\nSESSION_DRIVER=database\\nSESSION_SECURE_COOKIE=true\\n' >> /var/www/.env && php artisan config:clear && php artisan storage:link --no-interaction 2>/dev/null; php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan db:seed --force --class=ProductSeeder && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
