@@ -1,0 +1,27 @@
+FROM php:8.2-cli
+
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/install-php-extensions \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        default-mysql-client curl unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions pdo_mysql mbstring zip opcache
+
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+
+ENV COMPOSER_MEMORY_LIMIT=-1
+WORKDIR /var/www
+
+COPY composer.json composer.lock* ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+
+COPY . .
+
+RUN composer dump-autoload --optimize --no-dev \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
+    && cp .env.example .env
+
+EXPOSE 8080
+
+CMD sh -c "php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
