@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Report — FruGo</title>
+<style>
+@media print { .no-print{display:none!important} body{font-size:11pt} .page-break{page-break-before:always} }
+:root {
+  --ink:#0F1A2E;--muted:#4B5A72;--border:#CDD6E8;
+  --accent:#3D8B00;--accent-l:#F0FDE4;--surface:#F8FFF0;
+  --mono:"Consolas","Monaco",monospace;--sans:Georgia,"Times New Roman",serif;
+  --ui:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#fff;color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.8}
+.cover{background:linear-gradient(135deg,#1A3A00 0%,#2D6A00 60%,#3D8B00 100%);color:#fff;padding:80px 60px 64px;position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.03) 60px);pointer-events:none}
+.cover-cat{font-family:var(--ui);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(180,255,100,.6);margin-bottom:32px}
+.cover h1{font-family:var(--ui);font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;color:#fff;margin-bottom:12px}
+.cover-sub{font-family:var(--ui);font-size:1.05rem;color:rgba(255,255,255,.5);margin-bottom:56px}
+.cover-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;max-width:640px}
+.cm-label{font-family:var(--ui);font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px}
+.cm-val{font-family:var(--ui);font-size:.9rem;color:rgba(255,255,255,.8)}
+.doc{max-width:800px;margin:0 auto;padding:0 40px 80px}
+@media(max-width:640px){.doc{padding:0 20px 60px}.cover{padding:48px 24px 40px}}
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:28px 32px;margin:48px 0}
+.toc h2{font-family:var(--ui);font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.toc ol{padding-left:20px}.toc li{margin-bottom:6px}
+.toc a{font-family:var(--ui);font-size:.88rem;color:var(--accent);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+.section{padding:52px 0;border-bottom:1px solid var(--border)}.section:last-child{border-bottom:none}
+.sec-num{font-family:var(--ui);font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.section h2{font-family:var(--ui);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:24px}
+.section h3{font-family:var(--ui);font-size:1rem;font-weight:700;margin:28px 0 10px;color:var(--ink)}
+.section p{margin-bottom:14px;font-size:.95rem;color:#1A2940}
+.section ul,.section ol{padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:6px;font-size:.93rem;color:#1A2940}
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem;margin:20px 0;background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.tbl thead th{background:#1A3A00;color:rgba(255,255,255,.7);padding:10px 14px;text-align:left;font-family:var(--ui);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase}
+.tbl tbody tr{border-bottom:1px solid var(--surface)}.tbl tbody tr:last-child{border-bottom:none}
+.tbl tbody td{padding:10px 14px;vertical-align:top;font-family:var(--ui)}
+.tbl tbody td:first-child{font-weight:600;color:var(--accent);font-family:var(--mono);font-size:.8rem;white-space:nowrap}
+.code-block{background:#0D1829;border-radius:8px;overflow:hidden;margin:20px 0}
+.cb-label{background:#152233;padding:7px 16px;font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.28);letter-spacing:.1em}
+.code-block pre{font-family:var(--mono);font-size:.78rem;color:#BAE6FD;padding:16px 20px;overflow-x:auto;line-height:1.8}
+.note{border-left:3px solid var(--accent);background:var(--accent-l);border-radius:0 6px 6px 0;padding:12px 18px;margin:18px 0;font-family:var(--ui);font-size:.88rem;color:#1A3A00}
+.note strong{display:block;margin-bottom:4px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.arch{background:#0D1829;border-radius:10px;padding:28px 32px;margin:20px 0;font-family:var(--mono);font-size:.78rem;overflow-x:auto}
+.arch pre{color:#BAE6FD;line-height:2}
+code{font-family:var(--mono);font-size:.82em;background:var(--accent-l);color:var(--accent);padding:1px 5px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="cover-cat">Technical Report</p>
+  <h1>FruGo</h1>
+  <p class="cover-sub">Full-Stack Fresh Produce E-Commerce Platform with OTP Auth &amp; Admin Approval Workflow</p>
+  <div class="cover-meta">
+    <div class="cm-item"><p class="cm-label">Author</p><p class="cm-val">Vasant Konar</p></div>
+    <div class="cm-item"><p class="cm-label">Contact</p><p class="cm-val">vasant@crew.inc</p></div>
+    <div class="cm-item"><p class="cm-label">Date</p><p class="cm-val">June 2026</p></div>
+    <div class="cm-item"><p class="cm-label">Version</p><p class="cm-val">1.0 — Initial Release</p></div>
+    <div class="cm-item"><p class="cm-label">Repository</p><p class="cm-val">github.com/vasant24konar/FruGo</p></div>
+    <div class="cm-item"><p class="cm-label">Stack</p><p class="cm-val">PHP 8.2 · Laravel 11 · MySQL 8 · Docker</p></div>
+  </div>
+</header>
+
+<div class="doc">
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#s1">Executive Summary</a></li>
+      <li><a href="#s2">Introduction &amp; Scope</a></li>
+      <li><a href="#s3">System Architecture</a></li>
+      <li><a href="#s4">Technology Stack</a></li>
+      <li><a href="#s5">Database Design</a></li>
+      <li><a href="#s6">Module Descriptions</a></li>
+      <li><a href="#s7">Authentication &amp; RBAC</a></li>
+      <li><a href="#s8">OTP Login Flow</a></li>
+      <li><a href="#s9">Security Design</a></li>
+      <li><a href="#s10">Deployment &amp; Infrastructure</a></li>
+      <li><a href="#s11">Challenges &amp; Solutions</a></li>
+      <li><a href="#s12">Testing Strategy</a></li>
+      <li><a href="#s13">Future Enhancements</a></li>
+      <li><a href="#s14">Conclusion</a></li>
+    </ol>
+  </nav>
+
+  <section class="section" id="s1">
+    <p class="sec-num">Section 01</p>
+    <h2>Executive Summary</h2>
+    <p>FruGo is a full-stack e-commerce web application built on <strong>Laravel 11 (PHP 8.2)</strong> for selling fresh fruits and vegetables online — a complete platform combining a customer-facing shop with a back-office administration system in a single application.</p>
+    <p>Three roles — Administrator, Product Manager, and Customer — each have distinct capabilities. Customers browse an approved product catalogue, add items to a session-based cart, and place orders, all authenticated via <strong>passwordless OTP login</strong> (a 6-digit code emailed to them). Admins and Product Managers use traditional email/password login and operate the back-office: creating products, managing approval workflows, and administering user accounts.</p>
+    <p>The application is containerised with Docker Compose, deployable with a single command, and structured around SOLID principles using Repository and Service design patterns.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <p class="sec-num">Section 02</p>
+    <h2>Introduction &amp; Scope</h2>
+    <h3>Purpose</h3>
+    <p>FruGo delivers a frictionless shopping experience for customers (no password to remember) while maintaining controlled product publishing — products created by Product Managers are only visible in the shop after explicit approval by an Administrator.</p>
+    <h3>In Scope</h3>
+    <ul>
+      <li><strong>Customer shop</strong> — product catalogue, search, category filter, product detail pages</li>
+      <li><strong>Session cart</strong> — add, update quantity, remove, clear; persisted in PHP session</li>
+      <li><strong>Checkout &amp; order tracking</strong> — place order from cart, view order history and status</li>
+      <li><strong>OTP passwordless auth</strong> — customers authenticate via 6-digit email code (10-minute expiry)</li>
+      <li><strong>Admin / PM back-office</strong> — full CRUD product management, approval workflow</li>
+      <li><strong>Admin user management</strong> — create staff accounts, assign roles</li>
+      <li><strong>Email notifications</strong> — OTP delivery, product approved/rejected status emails</li>
+      <li><strong>Docker Compose</strong> four-service containerised local environment</li>
+    </ul>
+    <h3>Out of Scope</h3>
+    <ul>
+      <li>Payment gateway integration</li>
+      <li>Real-time notifications or WebSockets</li>
+      <li>Product image file upload (managed via image path references)</li>
+    </ul>
+  </section>
+
+  <section class="section" id="s3">
+    <p class="sec-num">Section 03</p>
+    <h2>System Architecture</h2>
+    <div class="arch"><pre>┌──────────────────────────────────────────────────────────────┐
+│                  HTTP Layer (Nginx)                           │
+│      Static assets served directly · PHP via FastCGI         │
+└─────────────────────────┬────────────────────────────────────┘
+                          │
+┌─────────────────────────▼────────────────────────────────────┐
+│             Laravel Application (PHP-FPM)                     │
+│                                                              │
+│  EncryptCookies → StartSession → VerifyCsrfToken             │
+│  → Authenticate → CheckRole (RBAC)                           │
+│                                                              │
+│  ShopController · CartController · OrderController           │
+│  ProductController · UserController                          │
+│  AuthenticatedSessionController · OtpLoginController         │
+│           │                                                  │
+│  ProductService  (approval rules, ownership checks)          │
+│           │                                                  │
+│  ProductRepository : ProductRepositoryInterface              │
+│           │                                                  │
+│  Models: User · Product · Order · OrderItem · OtpToken       │
+└─────────────────────────┬────────────────────────────────────┘
+                          │
+┌─────────────────────────▼────────────────────────────────────┐
+│  MySQL 8: users · products · orders · order_items            │
+│           otp_tokens                                         │
+└──────────────────────────────────────────────────────────────┘</pre></div>
+    <h3>Design Patterns</h3>
+    <table class="tbl">
+      <thead><tr><th>Pattern</th><th>Where Used</th><th>Benefit</th></tr></thead>
+      <tbody>
+        <tr><td>Repository</td><td>ProductRepository / ProductRepositoryInterface</td><td>Decouples query logic from business rules; independently testable</td></tr>
+        <tr><td>Service Layer</td><td>ProductService</td><td>Single place for approval rules and ownership checks</td></tr>
+        <tr><td>Dependency Injection</td><td>RepositoryServiceProvider</td><td>Controllers depend on contracts, not concrete classes</td></tr>
+        <tr><td>Middleware Pipeline</td><td>CheckRole, Authenticate</td><td>Cross-cutting access control without code duplication</td></tr>
+        <tr><td>Session Cart</td><td>CartController + PHP session</td><td>Zero-schema cart; automatically expires with session</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s4">
+    <p class="sec-num">Section 04</p>
+    <h2>Technology Stack</h2>
+    <table class="tbl">
+      <thead><tr><th>Component</th><th>Technology</th><th>Version</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr><td>Language</td><td>PHP</td><td>8.2</td><td>Latest stable; strict_types, named arguments, readonly properties</td></tr>
+        <tr><td>Framework</td><td>Laravel</td><td>11</td><td>Built-in Auth, Eloquent, Blade, Mail, Session — all features needed without extra packages</td></tr>
+        <tr><td>Database</td><td>MySQL</td><td>8.0</td><td>FULLTEXT indexes, strong Eloquent driver, wide hosting support</td></tr>
+        <tr><td>Web Server</td><td>Nginx</td><td>1.25-alpine</td><td>Serves CSS/JS directly; FastCGI pass-through to PHP-FPM</td></tr>
+        <tr><td>Containerisation</td><td>Docker + Compose</td><td>v2</td><td>Reproducible environment across developer machines</td></tr>
+        <tr><td>Dev Email</td><td>MailHog</td><td>latest</td><td>Catches all OTP emails and notifications locally — no real SMTP needed in dev</td></tr>
+        <tr><td>Frontend</td><td>Bootstrap 5 + Blade</td><td>5.3</td><td>Server-rendered; no JS build step; responsive out of the box</td></tr>
+        <tr><td>Code Style</td><td>Laravel Pint</td><td>1.x</td><td>PSR-12 enforced automatically</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s5">
+    <p class="sec-num">Section 05</p>
+    <h2>Database Design</h2>
+    <div class="arch"><pre>users (id, name, email, password, role, timestamps)
+  │
+  ├──&lt; products (id, title, description, price, stock, category,
+  │             image_path, status, rejection_reason, date_available,
+  │             created_by → users.id, approved_by → users.id,
+  │             approved_at, deleted_at, timestamps)
+  │
+  ├──&lt; orders (id, user_id → users.id, status, total,
+  │           shipping_address, notes, timestamps)
+  │            └──&lt; order_items (order_id, product_id, quantity,
+  │                              unit_price, timestamps)
+  │
+  └──&lt; otp_tokens (id, email, token [bcrypt hash], expires_at, timestamps)
+
+users.role       ENUM: admin | product_manager | customer
+products.status  ENUM: pending | approved | rejected
+orders.status    ENUM: pending | processing | shipped | delivered | cancelled</pre></div>
+    <table class="tbl">
+      <thead><tr><th>Table</th><th>Purpose</th><th>Key Design Decision</th></tr></thead>
+      <tbody>
+        <tr><td>users</td><td>All users across all roles</td><td>Single table with role discriminator — no joins needed for auth checks</td></tr>
+        <tr><td>products</td><td>Product catalogue with approval workflow</td><td>Soft-deletes preserve history; status enum drives the workflow state machine</td></tr>
+        <tr><td>orders</td><td>Customer orders placed at checkout</td><td>shipping_address snapshotted at order time</td></tr>
+        <tr><td>order_items</td><td>Line items per order</td><td>unit_price snapshotted — price changes never retroactively affect past orders</td></tr>
+        <tr><td>otp_tokens</td><td>One-time login codes for customers</td><td>Stored as bcrypt hash; deleted immediately after successful verification</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s6">
+    <p class="sec-num">Section 06</p>
+    <h2>Module Descriptions</h2>
+    <h3>ShopController</h3>
+    <p>Public product listing and detail. <code>index()</code> returns paginated approved products with search and category filter. No authentication required — the shop is publicly browsable.</p>
+    <h3>CartController</h3>
+    <p>Session-based cart stored as <code>session('cart') = [productId => ['qty' => N, 'price' => X]]</code>. Methods: add, update, remove, clear, index. Requires <code>role:customer</code> middleware — admins and managers cannot use the cart.</p>
+    <h3>OrderController</h3>
+    <p><code>store()</code> runs in a database transaction: creates the <code>Order</code>, writes all <code>OrderItem</code> rows with snapshotted prices, then clears the session cart atomically. <code>index()</code> and <code>show()</code> serve order history and detail to the authenticated customer.</p>
+    <h3>OtpLoginController</h3>
+    <p>Full passwordless OTP flow — generates a 6-digit code, bcrypt-hashes it before storage, sends via email, verifies with <code>Hash::check()</code>, and deletes the token on success. See Section 8 for the complete flow.</p>
+    <h3>ProductController</h3>
+    <p>RESTful product management for admin and product_manager roles. Delegates business logic to <code>ProductService</code>. Additional actions beyond CRUD: <code>approve()</code>, <code>reject()</code>, <code>submit()</code>. Sends email notifications on approval and rejection.</p>
+    <h3>Admin\UserController</h3>
+    <p>Admin-only staff account management. Customer accounts are auto-created by <code>OtpLoginController</code> on first login — this controller only creates and manages admin and product_manager accounts.</p>
+  </section>
+
+  <section class="section" id="s7">
+    <p class="sec-num">Section 07</p>
+    <h2>Authentication &amp; RBAC</h2>
+    <table class="tbl">
+      <thead><tr><th>Method</th><th>Used By</th><th>Route</th></tr></thead>
+      <tbody>
+        <tr><td>Email + Password</td><td>Admin, Product Manager</td><td>POST /login</td></tr>
+        <tr><td>OTP Passwordless</td><td>Customers</td><td>POST /login/otp → POST /login/otp/verify</td></tr>
+      </tbody>
+    </table>
+    <h3>Role Permission Matrix</h3>
+    <table class="tbl">
+      <thead><tr><th>Feature</th><th>admin</th><th>product_manager</th><th>customer</th></tr></thead>
+      <tbody>
+        <tr><td>Browse shop</td><td>✓</td><td>✓</td><td>✓ (public)</td></tr>
+        <tr><td>Cart / checkout / orders</td><td>✗</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Create product</td><td>✓ auto-approved</td><td>✓ goes pending</td><td>✗</td></tr>
+        <tr><td>Edit / delete product</td><td>✓ any</td><td>✓ own only</td><td>✗</td></tr>
+        <tr><td>Approve / Reject product</td><td>✓</td><td>✗</td><td>✗</td></tr>
+        <tr><td>Dashboard + order overview</td><td>✓</td><td>✓</td><td>✗</td></tr>
+        <tr><td>Manage user accounts</td><td>✓</td><td>✗</td><td>✗</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s8">
+    <p class="sec-num">Section 08</p>
+    <h2>OTP Login Flow</h2>
+    <div class="arch"><pre>Step 1 — Request OTP
+  Customer enters email → POST /login/otp
+  → Find or auto-create User with role=customer
+  → Generate random 6-digit code
+  → bcrypt hash → store in otp_tokens(email, hash, expires_at=now+10min)
+  → Mail::to($email)->send(new OtpMail($code))
+  → Redirect to verify form
+
+Step 2 — Verify OTP
+  Customer enters code → POST /login/otp/verify
+  → Lookup token by email
+  → Check expires_at &gt; now()
+  → Hash::check($submitted, $storedHash)
+  → DELETE token immediately  ← prevents replay attacks
+  → Auth::login($user) → session()-&gt;regenerate()
+  → Redirect to shop homepage
+
+Resend
+  POST /login/otp/resend → delete existing token → restart Step 1</pre></div>
+    <table class="tbl">
+      <thead><tr><th>Security Property</th><th>How Achieved</th></tr></thead>
+      <tbody>
+        <tr><td>Token secrecy at rest</td><td>bcrypt hash stored — DB breach does not expose valid codes</td></tr>
+        <tr><td>Short lifetime</td><td>10-minute server-side expiry enforced on every verify attempt</td></tr>
+        <tr><td>Single use</td><td>Token deleted immediately on successful verification</td></tr>
+        <tr><td>No enumeration</td><td>Same error message for wrong, expired, or missing token</td></tr>
+        <tr><td>Session fixation prevention</td><td>session()->regenerate() called immediately after Auth::login()</td></tr>
+        <tr><td>Auto account creation</td><td>New customer accounts created on first OTP request — no registration form needed</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>Development Mode</strong>When APP_ENV=local the OTP code is shown on the verify page and captured by MailHog at http://localhost:8025. In production only the email delivery path is used.</div>
+  </section>
+
+  <section class="section" id="s9">
+    <p class="sec-num">Section 09</p>
+    <h2>Security Design</h2>
+    <table class="tbl">
+      <thead><tr><th>Threat</th><th>Control</th><th>Implementation</th></tr></thead>
+      <tbody>
+        <tr><td>SQL Injection</td><td>Parameterised queries</td><td>All queries via Eloquent ORM — PDO prepared statements throughout</td></tr>
+        <tr><td>Stored XSS</td><td>Sanitisation + output encoding</td><td>strip_tags() allowlist in ProductRequest; Blade {{ }} encodes all output</td></tr>
+        <tr><td>CSRF</td><td>Synchroniser token</td><td>@csrf on all state-changing forms; VerifyCsrfToken middleware</td></tr>
+        <tr><td>OTP Brute Force</td><td>Short expiry + single use</td><td>10-minute window; token deleted on first correct use</td></tr>
+        <tr><td>Password Brute Force</td><td>Rate limiting</td><td>5 attempts per email/IP per minute → HTTP 429</td></tr>
+        <tr><td>Session Fixation</td><td>Session regeneration</td><td>session()->regenerate() on both login methods</td></tr>
+        <tr><td>Credential Storage</td><td>bcrypt</td><td>Passwords and OTP tokens both hashed — same security model</td></tr>
+        <tr><td>Privilege Escalation</td><td>Multi-layer RBAC</td><td>Route middleware + Form Request authorize() + Service ownership check</td></tr>
+        <tr><td>Sensitive File Exposure</td><td>Nginx deny + .gitignore</td><td>.env, .git, composer files blocked by Nginx; .env gitignored</td></tr>
+        <tr><td>Clickjacking</td><td>HTTP header</td><td>X-Frame-Options: SAMEORIGIN via Nginx</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s10">
+    <p class="sec-num">Section 10</p>
+    <h2>Deployment &amp; Infrastructure</h2>
+    <table class="tbl">
+      <thead><tr><th>Service</th><th>Image</th><th>Role</th><th>Port</th></tr></thead>
+      <tbody>
+        <tr><td>pm_nginx</td><td>nginx:1.25-alpine</td><td>HTTP server; proxies PHP to pm_app via FastCGI</td><td>8080→80</td></tr>
+        <tr><td>pm_app</td><td>PHP 8.2-FPM</td><td>Laravel runtime; OTP generation, mail dispatch</td><td>9000 (internal)</td></tr>
+        <tr><td>pm_db</td><td>mysql:8.0</td><td>Persistent database with healthcheck</td><td>3306 (internal)</td></tr>
+        <tr><td>pm_mailhog</td><td>mailhog/mailhog</td><td>Catches OTP emails and notifications locally</td><td>8025 UI / 1025 SMTP</td></tr>
+      </tbody>
+    </table>
+    <h3>Demo Credentials</h3>
+    <table class="tbl">
+      <thead><tr><th>Role</th><th>Login Method</th><th>Email</th><th>Password / OTP</th></tr></thead>
+      <tbody>
+        <tr><td>admin</td><td>Password</td><td>admin@example.com</td><td>Admin@1234</td></tr>
+        <tr><td>product_manager</td><td>Password</td><td>manager@example.com</td><td>Manager@1234</td></tr>
+        <tr><td>customer</td><td>OTP</td><td>any valid email</td><td>Check MailHog at :8025</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s11">
+    <p class="sec-num">Section 11</p>
+    <h2>Challenges &amp; Solutions</h2>
+    <h3>OTP Token — Hashed Storage</h3>
+    <p><strong>Problem:</strong> Storing a 6-digit OTP in plaintext means a DB breach exposes all pending tokens immediately.</p>
+    <p><strong>Solution:</strong> bcrypt hash stored in DB; plaintext exists only in memory and in the email. <code>Hash::check()</code> performs constant-time verification.</p>
+    <h3>Session Cart Without a Database Table</h3>
+    <p><strong>Problem:</strong> A DB-backed cart needs its own table, user association before checkout, and abandoned-cart cleanup jobs.</p>
+    <p><strong>Solution:</strong> PHP session array keyed by product ID. Zero schema, automatically expires with session. Trade-off: cart lost on session expiry — persisting to DB after login is a natural future enhancement.</p>
+    <h3>Price Snapshot on Order</h3>
+    <p><strong>Problem:</strong> Storing only a product FK in order_items means future price changes retroactively alter historical order totals.</p>
+    <p><strong>Solution:</strong> <code>unit_price</code> copied from <code>$product->price</code> into <code>order_items</code> at checkout time. Historical orders are immutable.</p>
+    <h3>Named Route Conflict — Two Login Methods</h3>
+    <p><strong>Problem:</strong> Laravel's <code>auth</code> middleware redirects to the named route <code>login</code>. FruGo has two login paths — the name must resolve to one primary entry point.</p>
+    <p><strong>Solution:</strong> Password login is named <code>login</code> (Laravel's default expectation). The page includes a prominent link to the OTP form. All middleware redirects land on the password page, which offers OTP as an alternative.</p>
+  </section>
+
+  <section class="section" id="s12">
+    <p class="sec-num">Section 12</p>
+    <h2>Testing Strategy</h2>
+    <table class="tbl">
+      <thead><tr><th>Test Type</th><th>Scope</th></tr></thead>
+      <tbody>
+        <tr><td>Feature — OTP Auth</td><td>Request → token created; correct verify → logged in + token deleted; expired → rejected; wrong → rejected</td></tr>
+        <tr><td>Feature — Shop</td><td>Approved products visible; pending/rejected hidden from public listing</td></tr>
+        <tr><td>Feature — Cart</td><td>Add, update, remove; customer-only (admin blocked with 403)</td></tr>
+        <tr><td>Feature — Checkout</td><td>Order created with correct line items and snapshotted prices; cart cleared after</td></tr>
+        <tr><td>Feature — Approval</td><td>Manager creates product → pending; admin approves → approved + email sent</td></tr>
+        <tr><td>Unit — ProductService</td><td>canModify() for own/foreign/admin user combinations</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s13">
+    <p class="sec-num">Section 13</p>
+    <h2>Future Enhancements</h2>
+    <table class="tbl">
+      <thead><tr><th>Area</th><th>Enhancement</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>Image Upload</td><td>Replace text path input with file upload — store to S3 with auto-thumbnail generation</td><td>High</td></tr>
+        <tr><td>Persistent Cart</td><td>Save cart to DB on login so it survives session expiry and device switches</td><td>High</td></tr>
+        <tr><td>OTP Rate Limiting</td><td>Limit OTP requests per email/IP to prevent email flood abuse</td><td>High</td></tr>
+        <tr><td>Payment Integration</td><td>Stripe or Razorpay — collect payment before confirming order</td><td>High</td></tr>
+        <tr><td>Admin Order Management</td><td>Admin view of all orders with status update controls</td><td>Medium</td></tr>
+        <tr><td>Automated Tests</td><td>PHPUnit feature tests for OTP, cart, checkout, and approval flow</td><td>Medium</td></tr>
+        <tr><td>CI/CD Pipeline</td><td>GitHub Actions: lint → test → Docker build → deploy on push to main</td><td>Medium</td></tr>
+        <tr><td>CSP Header</td><td>Content-Security-Policy to prevent injected script execution</td><td>Low</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s14">
+    <p class="sec-num">Section 14</p>
+    <h2>Conclusion</h2>
+    <p>FruGo demonstrates a complete, production-structured Laravel application combining a customer-facing e-commerce shop with a staff back-office — differentiated entirely by role-based access control within a single codebase.</p>
+    <p>The passwordless OTP authentication provides frictionless customer onboarding while bcrypt-hashed token storage and immediate post-use deletion meet the same security bar as traditional password authentication. Price-snapshotted orders and the product approval workflow form a coherent, trust-safe buying experience that can scale to real production use with the enhancements identified above.</p>
+    <div class="note"><strong>Repository</strong>Source code, deployment scripts, and configuration: <a href="https://github.com/vasant24konar/FruGo" style="color:var(--accent)">github.com/vasant24konar/FruGo</a></div>
+  </section>
+</div>
+</body>
+</html>

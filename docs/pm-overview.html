@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Manager — Technical Overview</title>
+<style>
+:root {
+  --ground:#F0F4FF;--surface:#FFF;--text:#0F1A2E;--muted:#5A6A85;
+  --accent:#3B82F6;--accent-l:#DBEAFE;--accent-m:#93C5FD;
+  --border:#C7D8F8;--dark:#0F1A2E;--dark-s:#162236;
+  --code-fg:#BAE6FD;--code-bg:#0D1B2A;
+  --mono:"Consolas","Monaco","Lucida Console",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ground);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65}
+
+/* HERO */
+.hero{background:var(--dark);padding:80px 40px 72px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 110%,rgba(59,130,246,.22) 0%,transparent 70%);pointer-events:none}
+.hero-eye{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(147,197,253,.6);margin-bottom:24px}
+.hero-title{font-family:var(--mono);font-size:clamp(2.4rem,7vw,5.5rem);font-weight:700;line-height:1;letter-spacing:-.03em;color:var(--accent-m);margin-bottom:10px}
+.hero-sub{font-family:var(--mono);font-size:clamp(.9rem,2vw,1.3rem);color:rgba(255,255,255,.28);letter-spacing:.06em;margin-bottom:32px}
+.hero-desc{font-size:1rem;color:rgba(255,255,255,.55);max-width:540px;margin:0 auto 48px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:44px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-n{display:block;font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--accent-m);line-height:1;margin-bottom:4px}
+.stat-l{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+
+/* LAYOUT */
+.container{max-width:920px;margin:0 auto;padding:0 28px}
+.section{padding:64px 0;border-bottom:1px solid var(--border)}
+.section:last-child{border-bottom:none}
+.sec-label{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.sec-title{font-size:1.6rem;font-weight:700;letter-spacing:-.02em;margin-bottom:32px;line-height:1.2}
+
+/* TECH GRID */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.tc-lbl{font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.tc-name{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.tc-note{font-size:.78rem;color:var(--muted)}
+
+/* TERMINAL */
+.term{background:var(--code-bg);border-radius:12px;overflow:hidden}
+.term-bar{background:var(--dark-s);padding:10px 16px;display:flex;align-items:center;gap:7px}
+.td{width:11px;height:11px;border-radius:50%}
+.td.r{background:#FF5F57}.td.y{background:#FEBC2E}.td.g{background:#28C840}
+.term-ttl{font-family:var(--mono);font-size:.7rem;color:rgba(255,255,255,.25);margin-left:8px}
+.term-body{padding:24px 28px;font-family:var(--mono);font-size:.8rem;line-height:2;overflow-x:auto}
+.term-body pre{color:var(--code-fg)}
+.ac{color:rgba(147,197,253,.35)}.ah{color:#67E8F9}.af{color:#FCD34D}
+.am{color:#C084FC}.ak{color:#BAE6FD}.as{color:#6EE7B7}.ar{color:#FCA5A5}.ad{color:rgba(186,230,253,.2)}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:620px){.feat-grid{grid-template-columns:1fr}}
+.fg{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.fg-head{background:var(--accent);color:#fff;padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px}
+.fg ul{list-style:none;padding:0}
+.fg ul li{padding:11px 18px;font-size:.875rem;border-bottom:1px solid var(--ground);display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.fg ul li:last-child{border-bottom:none}
+.ck{color:var(--accent);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* FLOW */
+.flows{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:640px){.flows{grid-template-columns:1fr}}
+.flow{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px}
+.flow-ttl{font-size:.9rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.fs{display:flex;flex-direction:column}
+.fstep{display:flex;gap:12px;align-items:flex-start}
+.fsl{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.fdot{width:24px;height:24px;background:var(--accent-l);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--accent);flex-shrink:0}
+.fline{width:2px;flex:1;min-height:16px;background:var(--border);margin:2px 0}
+.fc{padding-bottom:16px;padding-top:2px}
+.fc strong{font-size:.85rem;font-weight:600;display:block}
+.fc span{font-size:.78rem;color:var(--muted)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl thead th{background:var(--dark);color:rgba(255,255,255,.75);padding:11px 16px;text-align:left;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase}
+.tbl tbody tr{border-bottom:1px solid var(--ground)}
+.tbl tbody tr:last-child{border-bottom:none}
+.tbl tbody td{padding:11px 16px;vertical-align:top}
+.tbl tbody td:first-child{font-weight:600;font-size:.78rem;color:var(--accent);font-family:var(--mono);white-space:nowrap}
+.tbl tbody td:last-child{color:var(--muted);font-size:.82rem}
+
+/* SETUP */
+.setup{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:22px}
+.setup-bar{background:var(--dark-s);padding:8px 16px;font-family:var(--mono);font-size:.66rem;color:rgba(255,255,255,.3);letter-spacing:.1em}
+.setup pre{font-family:var(--mono);font-size:.8rem;color:var(--code-fg);padding:20px 26px;overflow-x:auto;line-height:2}
+.sc{color:rgba(186,230,253,.3)}.scmd{color:#BAE6FD}.surl{color:#67E8F9}
+
+/* CREDS */
+.creds{width:100%;border-collapse:collapse;font-size:.875rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.creds th{background:var(--accent-l);color:var(--accent);padding:9px 16px;text-align:left;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase}
+.creds td{padding:10px 16px;border-bottom:1px solid var(--ground);font-size:.85rem}
+.creds tr:last-child td{border-bottom:none}
+.creds td:nth-child(2),.creds td:nth-child(3){font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+/* ARCH PATTERN DIAGRAM */
+.pattern{display:flex;flex-direction:column;gap:0;max-width:600px}
+.pat-row{display:flex;align-items:center;gap:0}
+.pat-box{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:8px;padding:12px 16px;text-align:center}
+.pat-box.active{border-color:var(--accent);background:var(--accent-l)}
+.pat-box .pb-name{font-weight:700;font-size:.9rem}
+.pat-box .pb-desc{font-size:.72rem;color:var(--muted);margin-top:3px}
+.pat-arr{display:flex;justify-content:center;align-items:center;height:28px;color:var(--muted);font-size:1.1rem}
+
+/* REPO CARDS */
+.repos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.repos{grid-template-columns:1fr}}
+.repo{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;text-decoration:none;color:var(--text);display:block;transition:border-color .15s,box-shadow .15s}
+.repo:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(59,130,246,.12)}
+.repo-icon{font-size:1.5rem;margin-bottom:8px;display:block}
+.repo-name{font-size:1rem;font-weight:700;margin-bottom:4px}
+.repo-desc{font-size:.8rem;color:var(--muted)}
+.repo-link{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.04em}
+
+/* FOOTER */
+.footer{background:var(--dark);color:rgba(255,255,255,.3);text-align:center;padding:38px 24px;font-size:.8rem;font-family:var(--mono)}
+.footer strong{color:var(--accent-m)}
+
+@media(max-width:560px){.hero{padding:56px 24px 52px}.section{padding:48px 0}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="hero-eye">// PHP 8.2 · Laravel 11 · MySQL · Docker · PSR-12</p>
+  <h1 class="hero-title">Project Manager</h1>
+  <p class="hero-sub">// enterprise admin dashboard</p>
+  <p class="hero-desc">A Laravel 11 admin panel with multi-role access control, product approval workflows, rich-text CRUD, full-text search, and a clean Repository + Service architecture — demonstrating enterprise PHP patterns from day one.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">3</span><span class="stat-l">User Roles</span></div>
+    <div class="stat"><span class="stat-n">SOLID</span><span class="stat-l">Principles</span></div>
+    <div class="stat"><span class="stat-n">PSR-12</span><span class="stat-l">Code Style</span></div>
+    <div class="stat"><span class="stat-n">4</span><span class="stat-l">Docker Services</span></div>
+  </div>
+</header>
+
+<main>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 01 — Technology</p>
+    <h2 class="sec-title">Technology Stack</h2>
+    <div class="tech-grid">
+      <div class="tc"><p class="tc-lbl">Language</p><p class="tc-name">PHP 8.2</p><p class="tc-note">strict_types, named args, match expressions</p></div>
+      <div class="tc"><p class="tc-lbl">Framework</p><p class="tc-name">Laravel 11</p><p class="tc-note">Streamlined bootstrap/app.php, no Kernel.php</p></div>
+      <div class="tc"><p class="tc-lbl">Database</p><p class="tc-name">MySQL 8</p><p class="tc-note">Eloquent ORM, FULLTEXT index on products</p></div>
+      <div class="tc"><p class="tc-lbl">Auth</p><p class="tc-name">Laravel Auth</p><p class="tc-note">Password login, bcrypt hashed, rate-limited</p></div>
+      <div class="tc"><p class="tc-lbl">Frontend</p><p class="tc-name">Blade + Bootstrap 5</p><p class="tc-note">Quill rich-text editor for product descriptions</p></div>
+      <div class="tc"><p class="tc-lbl">Infrastructure</p><p class="tc-name">Docker Compose</p><p class="tc-note">Nginx · PHP-FPM · MySQL · MailHog in containers</p></div>
+      <div class="tc"><p class="tc-lbl">Code Quality</p><p class="tc-name">PSR-4 + PSR-12</p><p class="tc-note">Laravel Pint linter (make lint)</p></div>
+      <div class="tc"><p class="tc-lbl">Email</p><p class="tc-name">Laravel Mail</p><p class="tc-note">Product status emails, caught by MailHog locally</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 02 — Architecture</p>
+    <h2 class="sec-title">Clean 4-Layer Architecture</h2>
+
+    <div class="pattern">
+      <div class="pat-row"><div class="pat-box"><p class="pb-name">HTTP Request</p><p class="pb-desc">Browser → Nginx → public/index.php</p></div></div>
+      <div class="pat-arr">↓</div>
+      <div class="pat-row"><div class="pat-box active"><p class="pb-name">Controller</p><p class="pb-desc">HTTP adapter only — validates input, returns response. Zero query logic.</p></div></div>
+      <div class="pat-arr">↓</div>
+      <div class="pat-row"><div class="pat-box active"><p class="pb-name">Service Layer</p><p class="pb-desc">Business rules live here — ownership checks, approval transitions, role guards.</p></div></div>
+      <div class="pat-arr">↓</div>
+      <div class="pat-row"><div class="pat-box active"><p class="pb-name">Repository</p><p class="pb-desc">All database queries. Implements ProductRepositoryInterface contract.</p></div></div>
+      <div class="pat-arr">↓</div>
+      <div class="pat-row"><div class="pat-box"><p class="pb-name">Eloquent Model → MySQL</p><p class="pb-desc">Product, User — parameterised queries, soft deletes, eager loading</p></div></div>
+    </div>
+
+    <br>
+    <div class="term" style="margin-top:24px">
+      <div class="term-bar"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="term-ttl">architecture.php</span></div>
+      <div class="term-body">
+        <pre><span class="ac">// Request hits ProductController@store (POST /products)</span>
+
+<span class="am">ProductRequest</span>       <span class="ad">──→</span>  <span class="ac">authorize() checks role, prepareForValidation() strips XSS</span>
+<span class="ak">ProductController</span>    <span class="ad">──→</span>  <span class="ac">calls service, returns redirect. No query logic here.</span>
+<span class="as">ProductService</span>       <span class="ad">──→</span>  <span class="ac">stamps created_by, sets status='pending', checks canModify()</span>
+<span class="ar">ProductRepository</span>    <span class="ad">──→</span>  <span class="ac">Product::create($data) — the only place queries are written</span>
+<span class="ah">MySQL</span>                <span class="ad">──→</span>  <span class="ac">row inserted, id returned</span>
+
+<span class="ac">// Email notification (admin alerted to new pending product)</span>
+<span class="as">ProductService</span>  <span class="ad">──→</span>  <span class="af">Mail::to(admin)->send(new ProductSubmittedMail($product))</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 03 — Features</p>
+    <h2 class="sec-title">What Each Role Can Do</h2>
+    <div class="feat-grid">
+      <div class="fg">
+        <div class="fg-head">🔐 Admin — Full Control</div>
+        <ul>
+          <li><span class="ck">✓</span> Approve or reject any pending product</li>
+          <li><span class="ck">✓</span> Edit or soft-delete any product regardless of creator</li>
+          <li><span class="ck">✓</span> Create and manage user accounts</li>
+          <li><span class="ck">✓</span> Assign roles (admin / product_manager / customer)</li>
+          <li><span class="ck">✓</span> View all orders across all customers</li>
+          <li><span class="ck">✓</span> Update order status (triggers customer email)</li>
+          <li><span class="ck">✓</span> Email sent to manager on approval/rejection</li>
+        </ul>
+      </div>
+      <div class="fg">
+        <div class="fg-head">📋 Product Manager</div>
+        <ul>
+          <li><span class="ck">✓</span> Create products with Quill rich-text description</li>
+          <li><span class="ck">✓</span> Set price, category, stock quantity</li>
+          <li><span class="ck">✓</span> Products enter <code style="font-family:monospace;font-size:.8em">pending</code> state automatically</li>
+          <li><span class="ck">✓</span> Edit and soft-delete own products only</li>
+          <li><span class="ck">✓</span> Full-text search across title + description</li>
+          <li><span class="ck">✓</span> Pagination on product list (12 per page)</li>
+          <li><span class="ck">✓</span> Receive email notification on approve/reject</li>
+        </ul>
+      </div>
+      <div class="fg">
+        <div class="fg-head">🛡️ Security Built-In</div>
+        <ul>
+          <li><span class="ck">✓</span> XSS sanitisation on all rich-text input (strip_tags allow-list)</li>
+          <li><span class="ck">✓</span> CSRF token on every state-changing form</li>
+          <li><span class="ck">✓</span> Rate-limited login — 5 attempts then lockout</li>
+          <li><span class="ck">✓</span> Role checked at route level AND in service layer</li>
+          <li><span class="ck">✓</span> Ownership check — manager can't edit others' products</li>
+          <li><span class="ck">✓</span> Soft deletes — products recoverable after deletion</li>
+        </ul>
+      </div>
+      <div class="fg">
+        <div class="fg-head">⚙️ Developer Experience</div>
+        <ul>
+          <li><span class="ck">✓</span> <code style="font-family:monospace;font-size:.8em">bash deploy.sh</code> — full setup in one command</li>
+          <li><span class="ck">✓</span> Makefile: make lint, make test, make fresh, make shell</li>
+          <li><span class="ck">✓</span> MailHog UI at localhost:8025 — see all emails instantly</li>
+          <li><span class="ck">✓</span> Laravel Pint enforces PSR-12 style automatically</li>
+          <li><span class="ck">✓</span> PHPUnit test suite wired up (make test)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 04 — Key Workflows</p>
+    <h2 class="sec-title">How Core Processes Work</h2>
+    <div class="flows">
+      <div class="flow">
+        <div class="flow-ttl">✅ Product Approval Flow</div>
+        <div class="fs">
+          <div class="fstep"><div class="fsl"><div class="fdot">1</div><div class="fline"></div></div><div class="fc"><strong>Manager creates product</strong><span>Status automatically set to <code style="font-family:monospace;font-size:.82em">pending</code> in ProductService</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">2</div><div class="fline"></div></div><div class="fc"><strong>Admin receives email</strong><span>ProductSubmittedMail dispatched to all admins</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">3</div><div class="fline"></div></div><div class="fc"><strong>Admin reviews &amp; decides</strong><span>Clicks Approve or Reject from the dashboard</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">4</div><div class="fline"></div></div><div class="fc"><strong>Manager notified</strong><span>ProductStatusMail sent to the product's creator</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">5</div></div><div class="fc"><strong>Approved = visible in shop</strong><span>ShopController query uses scopeApproved() automatically</span></div></div>
+        </div>
+      </div>
+      <div class="flow">
+        <div class="flow-ttl">🔑 Password Authentication Flow</div>
+        <div class="fs">
+          <div class="fstep"><div class="fsl"><div class="fdot">1</div><div class="fline"></div></div><div class="fc"><strong>User submits credentials</strong><span>LoginRequest validates format</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">2</div><div class="fline"></div></div><div class="fc"><strong>Rate limiter checks attempts</strong><span>5 failures per email+IP = lockout + Lockout event</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">3</div><div class="fline"></div></div><div class="fc"><strong>Auth::attempt() runs</strong><span>Bcrypt comparison, 12 rounds</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">4</div><div class="fline"></div></div><div class="fc"><strong>Session regenerated</strong><span>Prevents session fixation attack</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">5</div></div><div class="fc"><strong>Role-appropriate redirect</strong><span>Admin → /dashboard, else → /shop</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 05 — Security</p>
+    <h2 class="sec-title">Security Measures</h2>
+    <table class="tbl">
+      <thead><tr><th>Threat</th><th>How it is stopped</th></tr></thead>
+      <tbody>
+        <tr><td>SQL Injection</td><td>Eloquent parameterised query builder throughout. No raw SQL built from user input.</td></tr>
+        <tr><td>Stored XSS</td><td>ProductRequest::prepareForValidation() calls strip_tags() with a safe-tag allow-list before any data is validated or saved.</td></tr>
+        <tr><td>CSRF</td><td>@csrf on every POST/PATCH/DELETE form. VerifyCsrfToken middleware rejects missing tokens.</td></tr>
+        <tr><td>Brute Force Login</td><td>RateLimiter — 5 attempts per email+IP, then throttle. Lockout event fired.</td></tr>
+        <tr><td>Privilege Escalation</td><td>CheckRole middleware blocks at route level. ProductService::canModify() enforces ownership at object level. abort(403) on failure.</td></tr>
+        <tr><td>Mass Assignment</td><td>$fillable whitelist on every model. Attackers cannot inject role=admin via a crafted form submission.</td></tr>
+        <tr><td>Session Fixation</td><td>$request->session()->regenerate() on login. invalidate() + regenerateToken() on logout.</td></tr>
+        <tr><td>Sensitive Files</td><td>Nginx denies /dotfile requests. .env is gitignored. Docker image never exposes .env.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 06 — Getting Started</p>
+    <h2 class="sec-title">Run Locally in 3 Commands</h2>
+    <div class="setup">
+      <div class="setup-bar">BASH — Docker setup</div>
+      <pre><span class="sc"># Clone and enter</span>
+<span class="scmd">git clone https://github.com/vasant24konar/Project-Manager.git && cd Project-Manager</span>
+
+<span class="sc"># Copy environment file (no edits needed for local Docker)</span>
+<span class="scmd">cp .env.example .env</span>
+
+<span class="sc"># Bootstrap everything (builds images, migrates DB, seeds data)</span>
+<span class="scmd">bash deploy.sh</span>
+
+<span class="sc"># App running at</span>
+<span class="surl">http://localhost:8080</span>      <span class="sc"># Admin dashboard</span>
+<span class="surl">http://localhost:8025</span>      <span class="sc"># MailHog — approval notification emails</span></pre>
+    </div>
+    <table class="creds">
+      <thead><tr><th>Role</th><th>Email</th><th>Password</th><th>Access</th></tr></thead>
+      <tbody>
+        <tr><td>Admin</td><td>admin@example.com</td><td>Admin@1234</td><td>Full dashboard — approve/reject/manage users</td></tr>
+        <tr><td>Product Manager</td><td>manager@example.com</td><td>Manager@1234</td><td>Create products, see own pending status</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 07 — Repository</p>
+    <h2 class="sec-title">Source Code</h2>
+    <div class="repos">
+      <div class="repo">
+        <span class="repo-icon">📋</span>
+        <p class="repo-name">Project Manager</p>
+        <p class="repo-desc">Laravel 11 admin dashboard — RBAC, approval workflow, rich-text CRUD, full-text search, Docker.</p>
+        <span class="repo-link">github.com/vasant24konar/Project-Manager</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <strong>Project Manager</strong> — Built with Laravel 11 · PHP 8.2 · MySQL 8 · Docker<br>
+  <span style="margin-top:6px;display:block">by <strong>Vasant Konar</strong> — vasant@crew.inc</span>
+</footer>
+</body>
+</html>

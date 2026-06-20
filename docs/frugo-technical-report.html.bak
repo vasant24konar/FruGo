@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Report — FruGo</title>
+<style>
+@media print {
+  .no-print { display: none !important; }
+  body { font-size: 11pt; }
+  .page-break { page-break-before: always; }
+}
+:root {
+  --ink: #081A03; --muted: #3D5A2E; --border: #C5DEAD;
+  --accent: #3D7A0F; --accent-l: #EBF5DC; --surface: #F3FAE8;
+  --mono: "Consolas","Monaco",monospace; --sans: Georgia,"Times New Roman",serif;
+  --ui: system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: #fff; color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.8; }
+
+.cover { background: #0D1F08; color: #fff; padding: 80px 60px 64px; position: relative; overflow: hidden; }
+.cover::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(255,255,255,.025) 60px); pointer-events: none; }
+.cover-cat { font-family: var(--ui); font-size: .68rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(168,208,91,.5); margin-bottom: 32px; }
+.cover h1 { font-family: var(--ui); font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; color: #A8D05B; margin-bottom: 12px; }
+.cover-sub { font-family: var(--ui); font-size: 1.05rem; color: rgba(255,255,255,.4); margin-bottom: 56px; }
+.cover-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; max-width: 640px; }
+.cm-label { font-family: var(--ui); font-size: .6rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.28); margin-bottom: 4px; }
+.cm-val { font-family: var(--ui); font-size: .9rem; color: rgba(255,255,255,.7); }
+
+.doc { max-width: 800px; margin: 0 auto; padding: 0 40px 80px; }
+@media(max-width: 640px) { .doc { padding: 0 20px 60px; } .cover { padding: 48px 24px 40px; } }
+
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 28px 32px; margin: 48px 0; }
+.toc h2 { font-family: var(--ui); font-size: .7rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.toc ol { padding-left: 20px; }
+.toc li { margin-bottom: 6px; }
+.toc a { font-family: var(--ui); font-size: .88rem; color: var(--accent); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+.section { padding: 52px 0; border-bottom: 1px solid var(--border); }
+.section:last-child { border-bottom: none; }
+.sec-num { font-family: var(--ui); font-size: .62rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.section h2 { font-family: var(--ui); font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; margin-bottom: 24px; }
+.section h3 { font-family: var(--ui); font-size: 1rem; font-weight: 700; margin: 28px 0 10px; color: var(--ink); }
+.section p { margin-bottom: 14px; font-size: .95rem; color: #132309; }
+.section ul, .section ol { padding-left: 22px; margin-bottom: 14px; }
+.section li { margin-bottom: 6px; font-size: .93rem; color: #132309; }
+
+.tbl { width: 100%; border-collapse: collapse; font-size: .85rem; margin: 20px 0; background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tbl thead th { background: #0D1F08; color: rgba(255,255,255,.6); padding: 10px 14px; text-align: left; font-family: var(--ui); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; }
+.tbl tbody tr { border-bottom: 1px solid var(--surface); }
+.tbl tbody tr:last-child { border-bottom: none; }
+.tbl tbody td { padding: 10px 14px; vertical-align: top; font-family: var(--ui); }
+.tbl tbody td:first-child { font-weight: 600; color: var(--accent); font-family: var(--mono); font-size: .8rem; white-space: nowrap; }
+
+.code-block { background: #0D1B0A; border-radius: 8px; overflow: hidden; margin: 20px 0; }
+.cb-label { background: #152410; padding: 7px 16px; font-family: var(--mono); font-size: .65rem; color: rgba(255,255,255,.25); letter-spacing: .1em; }
+.code-block pre { font-family: var(--mono); font-size: .78rem; color: #A8D05B; padding: 16px 20px; overflow-x: auto; line-height: 1.8; }
+
+.note { border-left: 3px solid var(--accent); background: var(--accent-l); border-radius: 0 6px 6px 0; padding: 12px 18px; margin: 18px 0; font-family: var(--ui); font-size: .88rem; color: #1A3D08; }
+.note strong { display: block; margin-bottom: 4px; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+.arch { background: #0D1B0A; border-radius: 10px; padding: 28px 32px; margin: 20px 0; font-family: var(--mono); font-size: .78rem; overflow-x: auto; }
+.arch pre { color: #A8D05B; line-height: 2; }
+
+code { font-family: var(--mono); font-size: .82em; background: var(--accent-l); color: var(--accent); padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <p class="cover-cat">Technical Report</p>
+  <h1>FruGo</h1>
+  <p class="cover-sub">Fresh Produce E-Commerce Platform — OTP Auth, Session Cart &amp; Order Tracking</p>
+  <div class="cover-meta">
+    <div class="cm-item"><p class="cm-label">Author</p><p class="cm-val">Vasant Konar</p></div>
+    <div class="cm-item"><p class="cm-label">Contact</p><p class="cm-val">vasant@crew.inc</p></div>
+    <div class="cm-item"><p class="cm-label">Date</p><p class="cm-val">June 2026</p></div>
+    <div class="cm-item"><p class="cm-label">Version</p><p class="cm-val">1.0 — Initial Release</p></div>
+    <div class="cm-item"><p class="cm-label">Repository</p><p class="cm-val">github.com/vasant24konar/FruGo</p></div>
+    <div class="cm-item"><p class="cm-label">Stack</p><p class="cm-val">PHP 8.2 · Laravel 11 · MySQL 8 · Docker · Vercel</p></div>
+  </div>
+</header>
+
+<div class="doc">
+
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#s1">Executive Summary</a></li>
+      <li><a href="#s2">Introduction &amp; Scope</a></li>
+      <li><a href="#s3">System Architecture</a></li>
+      <li><a href="#s4">Technology Stack</a></li>
+      <li><a href="#s5">Database Design</a></li>
+      <li><a href="#s6">Module Descriptions</a></li>
+      <li><a href="#s7">OTP Authentication Design</a></li>
+      <li><a href="#s8">Session Cart &amp; Order Flow</a></li>
+      <li><a href="#s9">Security Design</a></li>
+      <li><a href="#s10">Deployment &amp; Infrastructure</a></li>
+      <li><a href="#s11">Challenges &amp; Solutions</a></li>
+      <li><a href="#s12">Testing Strategy</a></li>
+      <li><a href="#s13">Future Enhancements</a></li>
+      <li><a href="#s14">Conclusion</a></li>
+    </ol>
+  </nav>
+
+  <section class="section" id="s1">
+    <p class="sec-num">Section 01</p>
+    <h2>Executive Summary</h2>
+    <p>FruGo is a full-stack fresh-produce e-commerce application built on <strong>Laravel 11 (PHP 8.2)</strong>. It provides a customer-facing shop for browsing and purchasing fresh fruits with a frictionless passwordless OTP (One-Time Password) authentication flow, session-based shopping cart, order placement with delivery address capture, and an order history page with live status filtering across five states.</p>
+    <p>The application integrates directly with the Project Manager back-office system via a shared database — products approved in Project Manager immediately appear in the FruGo shop without any synchronisation step. FruGo is containerised with Docker Compose and additionally deployable to <strong>Vercel</strong> (serverless PHP) using a community runtime with a purpose-built filesystem workaround for Laravel's storage layer.</p>
+    <p>This report documents the architecture, OTP design, session cart implementation, security controls, Vercel serverless adaptation, and planned improvements for the system.</p>
+  </section>
+
+  <section class="section" id="s2">
+    <p class="sec-num">Section 02</p>
+    <h2>Introduction &amp; Scope</h2>
+    <h3>Purpose</h3>
+    <p>FruGo delivers the customer-facing layer of a two-application produce retail platform. It is designed to minimise friction for anonymous customers — no account registration form, no password to remember — while providing full order lifecycle visibility once a purchase is made.</p>
+    <h3>Scope</h3>
+    <ul>
+      <li>Passwordless OTP authentication (email-based, 6-digit, 10-minute expiry)</li>
+      <li>Product catalogue browse with keyword search and pagination</li>
+      <li>Session-based shopping cart (add, update quantity, remove, persistent across pages)</li>
+      <li>Order checkout with delivery address</li>
+      <li>Order history with five status tabs (All, Pending, In Process, Completed, Cancelled)</li>
+      <li>Sticky responsive navbar with live cart count</li>
+      <li>Custom Bootstrap 5 circular pill pagination</li>
+      <li>Owl Carousel product and testimonials sliders</li>
+      <li>Docker Compose local environment (Nginx, PHP-FPM, MySQL, MailHog)</li>
+      <li>Vercel serverless PHP deployment with external MySQL support</li>
+    </ul>
+    <h3>Out of Scope</h3>
+    <ul>
+      <li>Product management and approval (handled by Project Manager)</li>
+      <li>Payment gateway integration (identified as future enhancement)</li>
+      <li>Real-time order tracking updates</li>
+    </ul>
+  </section>
+
+  <section class="section" id="s3">
+    <p class="sec-num">Section 03</p>
+    <h2>System Architecture</h2>
+    <div class="arch">
+      <pre>┌──────────────────────────────────────────────────────────────┐
+│               HTTP Layer (Nginx / Vercel Edge)                │
+│  Static assets (CSS/JS/images) served directly               │
+│  PHP requests forwarded to application runtime               │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│              Laravel Application (PHP-FPM / Vercel PHP)       │
+│                                                              │
+│  Middleware: EncryptCookies → StartSession → VerifyCsrfToken │
+│             → Authenticate (on protected routes)             │
+│                                                              │
+│  ┌─────────────────────────────────────────────────────┐     │
+│  │  Controllers                                        │     │
+│  │  OtpLoginController  ShopController  CartController │     │
+│  │  OrderController     ProductController              │     │
+│  └─────────────────┬───────────────────────────────────┘     │
+│                    │                                         │
+│  ┌─────────────────▼───────────────────────────────────┐     │
+│  │  Repository / Service Layer                         │     │
+│  │  ProductRepository ← ProductRepositoryInterface     │     │
+│  │  ProductService (business rules, ownership)         │     │
+│  └─────────────────┬───────────────────────────────────┘     │
+│                    │                                         │
+│  ┌─────────────────▼───────────────────────────────────┐     │
+│  │  Eloquent Models                                    │     │
+│  │  User · Product · OtpToken · Order · OrderItem      │     │
+│  └─────────────────────────────────────────────────────┘     │
+└──────────────────────────┬───────────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────────┐
+│           MySQL 8 (Docker) / PlanetScale (Vercel)             │
+└──────────────────────────────────────────────────────────────┘</pre>
+    </div>
+    <h3>Shared Database with Project Manager</h3>
+    <p>FruGo and Project Manager share the same MySQL database. FruGo reads from the <code>products</code> table using the <code>approved</code> Eloquent scope (<code>WHERE status = 'approved'</code>). This means a product approved in Project Manager appears in FruGo on the next page load — no synchronisation, no API call between systems.</p>
+  </section>
+
+  <section class="section" id="s4">
+    <p class="sec-num">Section 04</p>
+    <h2>Technology Stack</h2>
+    <table class="tbl">
+      <thead><tr><th>Component</th><th>Technology</th><th>Version</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr><td>Language</td><td>PHP</td><td>8.2</td><td>strict_types, named arguments, match expressions, readonly properties. Supported by Vercel PHP runtime.</td></tr>
+        <tr><td>Framework</td><td>Laravel</td><td>11</td><td>Built-in Auth, Mail (OTP), Sessions (cart), Blade, Eloquent, Pagination, Form Requests — zero additional packages for core features.</td></tr>
+        <tr><td>Database</td><td>MySQL</td><td>8.0</td><td>Shared with Project Manager. FULLTEXT index for product search. PlanetScale-compatible for Vercel production.</td></tr>
+        <tr><td>Serverless Runtime</td><td>vercel-php</td><td>0.6.2</td><td>Community Vercel runtime that wraps PHP-FPM. Only option for deploying Laravel to Vercel without a traditional server.</td></tr>
+        <tr><td>Dev Email</td><td>MailHog</td><td>latest</td><td>Captures all OTP emails locally. Essential for testing the OTP flow without a real SMTP server.</td></tr>
+        <tr><td>Frontend</td><td>Bootstrap 5 + Blade</td><td>5.3</td><td>Server-rendered; no build step. Bootstrap provides responsive grid and components. Owl Carousel for product sliders.</td></tr>
+        <tr><td>Container</td><td>Docker + Compose</td><td>v2</td><td>Consistent local environment. Four services match production topology.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s5">
+    <p class="sec-num">Section 05</p>
+    <h2>Database Design</h2>
+    <h3>Entity Relationship Overview</h3>
+    <div class="arch">
+      <pre>users (id, name, email, password, role, timestamps)
+  │
+  ├──< otp_tokens (id, email, token[hashed], expires_at, timestamps)
+  │
+  └──< orders (id, user_id [FK], total_amount, delivery_address,
+               status, timestamps)
+                │
+                └──< order_items (id, order_id [FK], product_id [FK],
+                                  quantity, price, timestamps)
+
+products (id, title, description, price, image, status,
+          created_by [FK→users.id], deleted_at, timestamps)
+  │
+  └──< order_items.product_id
+
+
+orders.status  ENUM: 'pending' | 'processing' | 'completed' | 'cancelled'</pre>
+    </div>
+    <h3>Table Descriptions</h3>
+    <table class="tbl">
+      <thead><tr><th>Table</th><th>Purpose</th><th>Key Design Decisions</th></tr></thead>
+      <tbody>
+        <tr><td>users</td><td>All users. Customers auto-created on first OTP login via firstOrCreate().</td><td>role='customer' set automatically. No password for OTP-only customers.</td></tr>
+        <tr><td>otp_tokens</td><td>Short-lived email OTP codes.</td><td>Token stored as bcrypt hash. expires_at enforced at query level. Deleted immediately on use.</td></tr>
+        <tr><td>products</td><td>Shared with Project Manager. Only approved products shown in shop.</td><td>status='approved' Eloquent scope. Soft deletes for data integrity.</td></tr>
+        <tr><td>orders</td><td>Customer purchase records. Status tracks fulfilment progress.</td><td>status column drives the five-tab order history page.</td></tr>
+        <tr><td>order_items</td><td>Line items for each order. Stores price at time of purchase.</td><td>price column is a snapshot — decoupled from current product price.</td></tr>
+      </tbody>
+    </table>
+    <div class="note"><strong>Price Snapshot Design</strong>order_items.price stores the product price at the moment of purchase, not a foreign key to the current price. This ensures historical order totals remain accurate even if a product's price is later changed.</div>
+  </section>
+
+  <section class="section" id="s6">
+    <p class="sec-num">Section 06</p>
+    <h2>Module Descriptions</h2>
+    <h3>OtpLoginController</h3>
+    <p>Two-phase controller: <code>requestForm()</code> / <code>sendOtp()</code> handle the email entry step; <code>verifyForm()</code> / <code>verifyOtp()</code> handle code verification. On successful verification: OTP token deleted, <code>User::firstOrCreate()</code> registers or retrieves the customer, <code>Auth::login()</code> establishes the session, <code>session()->regenerate()</code> prevents fixation.</p>
+    <h3>ShopController</h3>
+    <p>Handles product browsing. Reads <code>?search=</code> from the query string, passes to <code>ProductRepository::search()</code> or <code>paginate()</code>. Returns the <code>shop.index</code> Blade view with a <code>LengthAwarePaginator</code> instance.</p>
+    <h3>CartController</h3>
+    <p>All cart operations use <code>session('cart', [])</code> — a plain PHP array keyed by product ID with quantity as value. Methods: <code>add()</code>, <code>update()</code> (quantity change), <code>remove()</code> (unset key), <code>index()</code> (load product details from session IDs in one <code>whereIn</code> query).</p>
+    <h3>OrderController</h3>
+    <p><code>store()</code> wraps the entire cart-to-order conversion in a <code>DB::transaction()</code>. Creates the parent <code>Order</code> record, then iterates the cart to create <code>OrderItem</code> records, then clears the cart session. <code>index()</code> uses query cloning to compute per-tab counts efficiently.</p>
+    <h3>OtpMail</h3>
+    <p>A standard Laravel Mailable. Constructor accepts the 6-digit code. <code>content()</code> points to <code>resources/views/emails/otp.blade.php</code>. Caught by MailHog locally; dispatched to a real SMTP provider in production.</p>
+  </section>
+
+  <section class="section" id="s7">
+    <p class="sec-num">Section 07</p>
+    <h2>OTP Authentication Design</h2>
+    <h3>Full Flow</h3>
+    <div class="arch">
+      <pre>1. Customer → POST /otp/request  { email }
+   → validate email format
+   → DELETE otp_tokens WHERE email = ?        (clear stale tokens)
+   → $code = random_int(100000, 999999)
+   → INSERT otp_tokens { email, bcrypt($code), now()+10min }
+   → Mail::to($email)->send(new OtpMail($code))
+   → redirect → /otp/verify
+
+2. Customer → POST /otp/verify  { digit_1..digit_6, email }
+   → $code = implode('', [digit_1..digit_6])
+   → SELECT FROM otp_tokens WHERE email=? AND expires_at > now()
+   → Hash::check($code, $token->token)        (bcrypt verify)
+   → DELETE otp_tokens WHERE id = ?           (single-use)
+   → User::firstOrCreate(['email'], ['name', 'role'=>'customer'])
+   → Auth::login($user)
+   → session()->regenerate()
+   → redirect → /shop</pre>
+    </div>
+    <h3>Security Properties</h3>
+    <table class="tbl">
+      <thead><tr><th>Property</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Replay prevention</td><td>Token deleted immediately on successful verification. Cannot be used twice.</td></tr>
+        <tr><td>Expiry</td><td>expires_at checked at DB query level (WHERE expires_at > now()). Expired tokens are silently ignored.</td></tr>
+        <tr><td>Brute force resistance</td><td>100000–999999 = 900,000 possible codes. 10-minute window. Rate limiting at route level.</td></tr>
+        <tr><td>Confidentiality</td><td>Token stored as bcrypt hash — database leak does not expose valid codes.</td></tr>
+        <tr><td>Token isolation</td><td>Old tokens deleted before issuing a new one — customer cannot accumulate multiple valid codes.</td></tr>
+        <tr><td>Dev convenience</td><td>In APP_DEBUG mode, OTP displayed on-screen in a highlighted box so local testing needs no SMTP.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s8">
+    <p class="sec-num">Section 08</p>
+    <h2>Session Cart &amp; Order Flow</h2>
+    <h3>Cart Data Structure</h3>
+    <div class="code-block">
+      <div class="cb-label">session('cart') — PHP array structure</div>
+      <pre>// Keyed by product_id, value is quantity
+[
+    5  => 2,   // 2 units of product ID 5
+    12 => 1,   // 1 unit of product ID 12
+    8  => 3,   // 3 units of product ID 8
+]
+
+// Cart count in navbar — no DB query
+array_sum(session('cart', []))  // → 6</pre>
+    </div>
+    <h3>Why Session Instead of Database</h3>
+    <p>A database cart requires a <code>cart_items</code> table, a row per item, and a query on every page load to display the cart count. Sessions are already loaded per-request by Laravel's session middleware — reading from them is a memory operation, not a database query. For anonymous or short-lived cart data, sessions are the correct choice.</p>
+    <h3>Order Placement (DB Transaction)</h3>
+    <div class="code-block">
+      <div class="cb-label">OrderController@store — transactional flow</div>
+      <pre>DB::transaction(function() use ($request, $cartData) {
+    $products = Product::whereIn('id', array_keys($cartData))->get();
+    $total    = $products->sum(fn($p) => $p->price * $cartData[$p->id]);
+
+    $order = Order::create([
+        'user_id'          => auth()->id(),
+        'total_amount'     => $total,
+        'delivery_address' => $request->delivery_address,
+        'status'           => 'pending',
+    ]);
+
+    foreach ($products as $product) {
+        $order->items()->create([
+            'product_id' => $product->id,
+            'quantity'   => $cartData[$product->id],
+            'price'      => $product->price,   // snapshot
+        ]);
+    }
+});
+$request->session()->forget('cart');   // clear after commit</pre>
+    </div>
+    <h3>Order Status Tab Implementation</h3>
+    <p>The order history page shows five tabs. Per-tab counts are computed by cloning the base <code>Builder</code> query — avoiding five separate query constructions — and calling <code>->count()</code> which executes a lightweight <code>SELECT COUNT(*)</code>. The <code>->appends($request->query())</code> call ensures pagination links preserve the active <code>?status=</code> parameter.</p>
+  </section>
+
+  <section class="section" id="s9">
+    <p class="sec-num">Section 09</p>
+    <h2>Security Design</h2>
+    <table class="tbl">
+      <thead><tr><th>Threat</th><th>Control</th><th>Implementation Location</th></tr></thead>
+      <tbody>
+        <tr><td>OTP Replay</td><td>Single-use token — deleted immediately on verify</td><td>OtpLoginController::verifyOtp()</td></tr>
+        <tr><td>OTP Enumeration</td><td>Tokens stored as bcrypt hash, not plaintext</td><td>OtpLoginController::sendOtp() — bcrypt($code)</td></tr>
+        <tr><td>SQL Injection</td><td>Eloquent parameterised queries throughout; no raw SQL from user input</td><td>All Repository / Controller query code</td></tr>
+        <tr><td>XSS — Stored</td><td>strip_tags() with safe-tag allowlist before validation; Blade {{ }} encoding on output</td><td>ProductRequest::prepareForValidation()</td></tr>
+        <tr><td>XSS — Reflected</td><td>All user-supplied values rendered through Blade {{ }} which calls htmlspecialchars()</td><td>All Blade templates</td></tr>
+        <tr><td>CSRF</td><td>@csrf token on all POST forms; VerifyCsrfToken middleware</td><td>cart.add, checkout, logout forms</td></tr>
+        <tr><td>Session Fixation</td><td>session()->regenerate() on OTP login success; invalidate() + regenerateToken() on logout</td><td>OtpLoginController, Auth routes</td></tr>
+        <tr><td>Privilege Escalation</td><td>Customers cannot reach /products or /admin — CheckRole middleware enforced at route level</td><td>routes/web.php route groups</td></tr>
+        <tr><td>Env Secrets</td><td>.env gitignored; only .env.example committed; Vercel env vars set via dashboard</td><td>.gitignore</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s10">
+    <p class="sec-num">Section 10</p>
+    <h2>Deployment &amp; Infrastructure</h2>
+    <h3>Local — Docker Compose</h3>
+    <table class="tbl">
+      <thead><tr><th>Service</th><th>Image</th><th>Role</th><th>Port</th></tr></thead>
+      <tbody>
+        <tr><td>pm_nginx</td><td>nginx:1.25-alpine</td><td>Static file serving + FastCGI proxy to PHP</td><td>8080→80</td></tr>
+        <tr><td>pm_app</td><td>Custom PHP 8.2-FPM</td><td>Laravel application runtime</td><td>9000 (internal)</td></tr>
+        <tr><td>pm_db</td><td>mysql:8.0</td><td>Persistent MySQL with healthcheck</td><td>3306 (internal)</td></tr>
+        <tr><td>pm_mailhog</td><td>mailhog/mailhog</td><td>OTP email trap</td><td>8025 (UI) / 1025 (SMTP)</td></tr>
+      </tbody>
+    </table>
+    <h3>Production — Vercel Serverless</h3>
+    <p>Vercel's filesystem is read-only except for <code>/tmp</code>. Laravel requires writable <code>storage/</code> and <code>bootstrap/cache/</code> directories. The solution is two-part:</p>
+    <ol>
+      <li><strong>api/index.php</strong> — the Vercel entry point creates <code>/tmp/storage/framework/{sessions,views,cache/data}</code> and <code>/tmp/storage/logs</code> directories before bootstrapping Laravel.</li>
+      <li><strong>bootstrap/app.php</strong> — calls <code>$app->useStoragePath('/tmp/storage')</code> when the <code>VERCEL</code> environment variable is present, redirecting all framework file I/O to <code>/tmp</code>.</li>
+    </ol>
+    <p>Session driver is set to <code>cookie</code> and cache store to <code>array</code> in Vercel environment variables, eliminating file writes at runtime entirely.</p>
+    <h3>Required Vercel Environment Variables</h3>
+    <table class="tbl">
+      <thead><tr><th>Variable</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>APP_KEY</td><td>base64:... (generate with php artisan key:generate --show)</td></tr>
+        <tr><td>APP_ENV</td><td>production</td></tr>
+        <tr><td>DB_HOST / DB_DATABASE / DB_USERNAME / DB_PASSWORD</td><td>PlanetScale or Railway MySQL connection details</td></tr>
+        <tr><td>SESSION_DRIVER</td><td>cookie</td></tr>
+        <tr><td>CACHE_STORE</td><td>array</td></tr>
+        <tr><td>LOG_CHANNEL</td><td>stderr</td></tr>
+        <tr><td>MAIL_MAILER / MAIL_HOST / MAIL_PORT / MAIL_USERNAME / MAIL_PASSWORD</td><td>Resend, Mailgun, or SendGrid SMTP credentials</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s11">
+    <p class="sec-num">Section 11</p>
+    <h2>Challenges &amp; Solutions</h2>
+    <h3>Vercel Read-Only Filesystem</h3>
+    <p><strong>Problem:</strong> Vercel's serverless containers have a read-only filesystem everywhere except <code>/tmp</code>. Laravel's framework requires writable directories for compiled views, session files, cache data, and logs. Without intervention, the application throws a 500 error on first request.</p>
+    <p><strong>Solution:</strong> Two-part filesystem redirect: <code>api/index.php</code> creates the required directories in <code>/tmp</code> before bootstrap; <code>bootstrap/app.php</code> redirects the storage path to <code>/tmp/storage</code> when running on Vercel. Session and cache drivers switched to stateless alternatives (<code>cookie</code> / <code>array</code>).</p>
+    <h3>Owl Carousel Navigation Arrows Overlapping Products</h3>
+    <p><strong>Problem:</strong> Owl Carousel's default configuration renders large <code>&lt;</code> <code>&gt;</code> navigation buttons that overlapped adjacent product cards and disrupted the layout.</p>
+    <p><strong>Solution:</strong> <code>nav: false</code> set in each carousel initialisation call in <code>public/js/main.js</code>. A CSS safety net (<code>.owl-carousel .owl-nav { display: none !important }</code>) added to the shop layout as a catch-all for any future carousel that opts into navigation by default.</p>
+    <h3>Bootstrap 5 Pagination Icon Size</h3>
+    <p><strong>Problem:</strong> Laravel's default Bootstrap 5 pagination view uses Bootstrap Icons (chevrons) that inherited the surrounding font size, rendering as oversized arrows that broke the pagination row layout.</p>
+    <p><strong>Solution:</strong> Published Laravel's pagination view (<code>php artisan vendor:publish --tag=laravel-pagination</code>) and replaced Bootstrap Icon spans with FontAwesome <code>fa-chevron-left/right</code> at <code>0.75rem</code>, restyled as circular pill buttons.</p>
+    <h3>OTP Emails Not Visible in Development</h3>
+    <p><strong>Problem:</strong> The default <code>MAIL_MAILER=log</code> writes emails to <code>laravel.log</code> — invisible to testers who don't know to look there.</p>
+    <p><strong>Solution:</strong> MailHog added as a Docker service. <code>MAIL_HOST=mailhog</code> (Docker service name resolves via internal network). All OTP emails visible at <code>http://localhost:8025</code>. Additionally, <code>APP_DEBUG=true</code> mode shows the OTP code directly on the verification screen as a development convenience.</p>
+  </section>
+
+  <section class="section" id="s12">
+    <p class="sec-num">Section 12</p>
+    <h2>Testing Strategy</h2>
+    <table class="tbl">
+      <thead><tr><th>Test Type</th><th>Coverage Area</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Feature — OTP Flow</td><td>Email entry → code generation → verify → session established; expired token rejected; replayed token rejected</td><td>Planned</td></tr>
+        <tr><td>Feature — Cart</td><td>Add, update quantity, remove, cart count in session, cart cleared after order</td><td>Planned</td></tr>
+        <tr><td>Feature — Order</td><td>Checkout creates Order + OrderItems, total correct, cart cleared, status defaults to pending</td><td>Planned</td></tr>
+        <tr><td>Feature — Status Tabs</td><td>?status=pending filters correctly; counts per tab match filtered results</td><td>Planned</td></tr>
+        <tr><td>Feature — Auth Guard</td><td>Unauthenticated customer redirected to /login on protected routes</td><td>Planned</td></tr>
+        <tr><td>Unit — OtpToken</td><td>isExpired() returns true/false correctly; token not reusable after delete</td><td>Planned</td></tr>
+      </tbody>
+    </table>
+    <p>PHPUnit is configured. Run tests with <code>make test</code> or <code>php artisan test</code>.</p>
+  </section>
+
+  <section class="section" id="s13">
+    <p class="sec-num">Section 13</p>
+    <h2>Future Enhancements</h2>
+    <table class="tbl">
+      <thead><tr><th>Area</th><th>Enhancement</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>Payments</td><td>Stripe / Razorpay checkout integration — replace cash-on-delivery with online card payment</td><td>High</td></tr>
+        <tr><td>Real-time updates</td><td>Broadcast order status changes to customers via Laravel Reverb / Pusher WebSockets</td><td>High</td></tr>
+        <tr><td>Order confirmation</td><td>Email receipt to customer on order placement via OtpMail pattern</td><td>High</td></tr>
+        <tr><td>Product images</td><td>Photo gallery using S3 driver + spatie/laravel-medialibrary for automatic resizing</td><td>Medium</td></tr>
+        <tr><td>Search</td><td>Laravel Scout + Meilisearch for typo-tolerant, relevance-ranked results</td><td>Medium</td></tr>
+        <tr><td>Delivery tracking</td><td>Shiprocket / Delhivery API integration for live courier status inside the orders page</td><td>Medium</td></tr>
+        <tr><td>Reviews</td><td>Star ratings and customer reviews per product with spam detection</td><td>Low</td></tr>
+        <tr><td>Loyalty programme</td><td>Points earned per purchase, redeemable at checkout</td><td>Low</td></tr>
+        <tr><td>Mobile app</td><td>Versioned JSON API with Sanctum tokens for a React Native or Flutter client</td><td>Low</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions: Pint lint → PHPUnit → Docker build → Vercel deploy</td><td>Medium</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section" id="s14">
+    <p class="sec-num">Section 14</p>
+    <h2>Conclusion</h2>
+    <p>FruGo demonstrates a modern Laravel e-commerce application with a well-reasoned authentication strategy, efficient session-based cart implementation, and a deployment architecture that spans both traditional Docker containers and modern serverless infrastructure.</p>
+    <p>The passwordless OTP authentication removes the single largest barrier to customer conversion — account creation — whilst maintaining strong security guarantees through hashed token storage, immediate token deletion, and enforced expiry. The session cart eliminates unnecessary database writes during the browsing phase and provides a zero-query cart count visible on every page.</p>
+    <p>The Vercel adaptation demonstrates that Laravel can be deployed to serverless PHP runtimes with careful attention to the filesystem model — a technique applicable to any Laravel application targeting cloud functions or edge compute environments.</p>
+    <div class="note"><strong>Repository</strong>Source code, deployment scripts, and configuration: <strong>github.com/vasant24konar/FruGo</strong></div>
+  </section>
+
+</div>
+</body>
+</html>

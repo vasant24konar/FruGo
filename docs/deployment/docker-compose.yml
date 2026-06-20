@@ -1,0 +1,70 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pm_app
+    restart: unless-stopped
+    volumes:
+      - .:/var/www
+      - ./storage:/var/www/storage
+    environment:
+      - APP_ENV=${APP_ENV:-local}
+    networks:
+      - pm_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: pm_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - pm_network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: pm_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-product_manager}
+      MYSQL_USER: ${DB_USERNAME:-pmuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-pmpassword}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+    volumes:
+      - pm_db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pm_network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: pm_mailhog
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - pm_network
+
+networks:
+  pm_network:
+    driver: bridge
+
+volumes:
+  pm_db_data:
+    driver: local

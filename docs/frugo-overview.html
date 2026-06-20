@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FruGo — Technical Overview</title>
+<style>
+:root {
+  --ground:#F5F8F2;--surface:#FFF;--text:#0D1F08;--muted:#6B7A63;
+  --accent:#5A9010;--accent-l:#E6F2D6;--accent-m:#A8D05B;
+  --border:#D6E8C6;--dark:#0D1F08;--dark-s:#152410;
+  --code-fg:#A8D05B;--code-bg:#0D1B0A;
+  --mono:"Consolas","Monaco","Lucida Console",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ground);color:var(--text);font-family:var(--sans);font-size:16px;line-height:1.65}
+
+.hero{background:var(--dark);padding:80px 40px 72px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 110%,rgba(90,144,16,.24) 0%,transparent 70%);pointer-events:none}
+.hero-eye{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(168,208,91,.55);margin-bottom:24px}
+.hero-title{font-family:var(--mono);font-size:clamp(3rem,9vw,7rem);font-weight:700;line-height:1;letter-spacing:-.03em;color:var(--code-fg);margin-bottom:10px}
+.hero-tagline{font-size:1rem;color:rgba(255,255,255,.45);font-style:italic;margin-bottom:28px;max-width:520px;margin-left:auto;margin-right:auto}
+.hero-desc{font-size:.95rem;color:rgba(255,255,255,.5);max-width:520px;margin:0 auto 48px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:44px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-n{display:block;font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--code-fg);line-height:1;margin-bottom:4px}
+.stat-l{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+
+.container{max-width:920px;margin:0 auto;padding:0 28px}
+.section{padding:64px 0;border-bottom:1px solid var(--border)}
+.section:last-child{border-bottom:none}
+.sec-label{font-family:var(--mono);font-size:.64rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.sec-title{font-size:1.6rem;font-weight:700;letter-spacing:-.02em;margin-bottom:32px;line-height:1.2}
+
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.tc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.tc-lbl{font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.tc-name{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.tc-note{font-size:.78rem;color:var(--muted)}
+
+.term{background:var(--code-bg);border-radius:12px;overflow:hidden}
+.term-bar{background:var(--dark-s);padding:10px 16px;display:flex;align-items:center;gap:7px}
+.td{width:11px;height:11px;border-radius:50%}
+.td.r{background:#FF5F57}.td.y{background:#FEBC2E}.td.g{background:#28C840}
+.term-ttl{font-family:var(--mono);font-size:.7rem;color:rgba(255,255,255,.22);margin-left:8px}
+.term-body{padding:24px 28px;font-family:var(--mono);font-size:.8rem;line-height:2;overflow-x:auto}
+.term-body pre{color:var(--code-fg)}
+.ac{color:rgba(168,208,91,.32)}.ah{color:#67E8F9}.af{color:#FCD34D}
+.am{color:#C084FC}.ak{color:#A8D05B}.as{color:#6EE7B7}.ar{color:#FCA5A5}.ad{color:rgba(168,208,91,.2)}
+
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:620px){.feat-grid{grid-template-columns:1fr}}
+.fg{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.fg-head{background:var(--accent);color:#fff;padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px}
+.fg ul{list-style:none;padding:0}
+.fg ul li{padding:11px 18px;font-size:.875rem;border-bottom:1px solid var(--ground);display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.fg ul li:last-child{border-bottom:none}
+.ck{color:var(--accent);font-weight:700;flex-shrink:0;margin-top:1px}
+
+.flows{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:640px){.flows{grid-template-columns:1fr}}
+.flow{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px}
+.flow-ttl{font-size:.9rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.fs{display:flex;flex-direction:column}
+.fstep{display:flex;gap:12px;align-items:flex-start}
+.fsl{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.fdot{width:24px;height:24px;background:var(--accent-l);border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--accent);flex-shrink:0}
+.fline{width:2px;flex:1;min-height:16px;background:var(--border);margin:2px 0}
+.fc{padding-bottom:16px;padding-top:2px}
+.fc strong{font-size:.85rem;font-weight:600;display:block}
+.fc span{font-size:.78rem;color:var(--muted)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem;background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl thead th{background:var(--dark);color:rgba(255,255,255,.75);padding:11px 16px;text-align:left;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase}
+.tbl tbody tr{border-bottom:1px solid var(--ground)}
+.tbl tbody tr:last-child{border-bottom:none}
+.tbl tbody td{padding:11px 16px;vertical-align:top}
+.tbl tbody td:first-child{font-weight:600;font-size:.78rem;color:var(--accent);font-family:var(--mono);white-space:nowrap}
+.tbl tbody td:last-child{color:var(--muted);font-size:.82rem}
+
+.setup{background:var(--code-bg);border-radius:12px;overflow:hidden;margin-bottom:22px}
+.setup-bar{background:var(--dark-s);padding:8px 16px;font-family:var(--mono);font-size:.66rem;color:rgba(255,255,255,.3);letter-spacing:.1em}
+.setup pre{font-family:var(--mono);font-size:.8rem;color:var(--code-fg);padding:20px 26px;overflow-x:auto;line-height:2}
+.sc{color:rgba(168,208,91,.3)}.scmd{color:#A8D05B}.surl{color:#67E8F9}
+
+.creds{width:100%;border-collapse:collapse;font-size:.875rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.creds th{background:var(--accent-l);color:var(--accent);padding:9px 16px;text-align:left;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase}
+.creds td{padding:10px 16px;border-bottom:1px solid var(--ground);font-size:.85rem}
+.creds tr:last-child td{border-bottom:none}
+.creds td:nth-child(2),.creds td:nth-child(3){font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+
+.vercel-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:620px){.vercel-grid{grid-template-columns:1fr}}
+.vc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px}
+.vc-label{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.vc-val{font-family:var(--mono);font-size:.82rem;color:var(--text)}
+.vc-note{font-size:.76rem;color:var(--muted);margin-top:3px}
+
+.repo{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px;text-decoration:none;color:var(--text);display:block;transition:border-color .15s,box-shadow .15s;max-width:400px}
+.repo:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(90,144,16,.12)}
+.repo-icon{font-size:1.5rem;margin-bottom:8px;display:block}
+.repo-name{font-size:1rem;font-weight:700;margin-bottom:4px}
+.repo-desc{font-size:.8rem;color:var(--muted)}
+.repo-link{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.04em}
+
+.footer{background:var(--dark);color:rgba(255,255,255,.3);text-align:center;padding:38px 24px;font-size:.8rem;font-family:var(--mono)}
+.footer strong{color:var(--code-fg)}
+@media(max-width:560px){.hero{padding:56px 24px 52px}.section{padding:48px 0}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="hero-eye">// Laravel 11 · OTP Auth · Session Cart · Order Tracking · Vercel-ready</p>
+  <h1 class="hero-title">FruGo</h1>
+  <p class="hero-tagline">"Get fresh fruits at better prices from trusted local vendors delivered to your doorstep."</p>
+  <p class="hero-desc">A full-stack fresh-produce e-commerce app — passwordless OTP login, product browsing with search, session-based cart, checkout, and order tracking with live status tabs.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">OTP</span><span class="stat-l">Passwordless Login</span></div>
+    <div class="stat"><span class="stat-n">0</span><span class="stat-l">Sign-up Form Needed</span></div>
+    <div class="stat"><span class="stat-n">5</span><span class="stat-l">Order Status Tabs</span></div>
+    <div class="stat"><span class="stat-n">Vercel</span><span class="stat-l">Deploy Ready</span></div>
+  </div>
+</header>
+
+<main>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 01 — Technology</p>
+    <h2 class="sec-title">Technology Stack</h2>
+    <div class="tech-grid">
+      <div class="tc"><p class="tc-lbl">Language</p><p class="tc-name">PHP 8.2</p><p class="tc-note">strict_types, clean OOP throughout</p></div>
+      <div class="tc"><p class="tc-lbl">Framework</p><p class="tc-name">Laravel 11</p><p class="tc-note">Auth, Mail, Sessions, Pagination built-in</p></div>
+      <div class="tc"><p class="tc-lbl">Database</p><p class="tc-name">MySQL 8</p><p class="tc-note">Products, orders, OTP tokens, sessions</p></div>
+      <div class="tc"><p class="tc-lbl">Authentication</p><p class="tc-name">OTP Passwordless</p><p class="tc-note">6-digit code, 10-min expiry, auto-register</p></div>
+      <div class="tc"><p class="tc-lbl">Frontend</p><p class="tc-name">Blade + Bootstrap 5</p><p class="tc-note">Sticky nav, Owl Carousel, custom pagination</p></div>
+      <div class="tc"><p class="tc-lbl">Email (Dev)</p><p class="tc-name">MailHog</p><p class="tc-note">Catches all OTP emails locally at :8025</p></div>
+      <div class="tc"><p class="tc-lbl">Infrastructure</p><p class="tc-name">Docker Compose</p><p class="tc-note">Nginx · PHP-FPM · MySQL · MailHog</p></div>
+      <div class="tc"><p class="tc-lbl">Production</p><p class="tc-name">Vercel + PlanetScale</p><p class="tc-note">vercel-php runtime, external MySQL</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 02 — Architecture</p>
+    <h2 class="sec-title">How a Shop Request Travels Through the App</h2>
+    <div class="term">
+      <div class="term-bar"><div class="td r"></div><div class="td y"></div><div class="td g"></div><span class="term-ttl">shop-request-lifecycle.php</span></div>
+      <div class="term-body">
+        <pre><span class="ac">// Customer visits GET /shop?search=mango&page=2</span>
+
+<span class="ah">Browser</span>              <span class="ad">──→</span>  <span class="af">Nginx (:8080)</span>          <span class="ac">// serves CSS/JS directly, forwards PHP</span>
+<span class="af">Nginx</span>                <span class="ad">──→</span>  <span class="af">public/index.php</span>       <span class="ac">// Laravel front controller</span>
+<span class="ac">// Middleware runs: EncryptCookies → StartSession → VerifyCsrfToken</span>
+<span class="ac">// auth middleware checks if logged in (OTP session active)</span>
+
+<span class="ak">Route::get('/shop'</span>, [<span class="am">ShopController</span>::class, <span class="ak">'index'</span>])
+
+<span class="am">ShopController</span>       <span class="ad">──→</span>  reads $search from URL, calls repository
+<span class="ar">ProductRepository</span>    <span class="ad">──→</span>  Product::approved()->search($q)->paginate(12)
+<span class="as">MySQL</span>                <span class="ad">──→</span>  returns matching approved products, page 2
+
+<span class="ac">// Response travels back</span>
+<span class="as">$products</span>  <span class="ad">──→</span>  <span class="am">ShopController</span>  <span class="ad">──→</span>  <span class="af">view('shop.index')</span>  <span class="ad">──→</span>  <span class="ah">HTML to browser</span>
+
+<span class="ac">// Cart count shown in navbar reads from session — zero DB queries</span>
+<span class="ak">array_sum($request->session()->get('cart', []))</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 03 — Features</p>
+    <h2 class="sec-title">Everything a Customer Can Do</h2>
+    <div class="feat-grid">
+      <div class="fg">
+        <div class="fg-head">🔑 Authentication</div>
+        <ul>
+          <li><span class="ck">✓</span> Enter any email — no password ever needed</li>
+          <li><span class="ck">✓</span> Receive 6-digit OTP by email (MailHog locally)</li>
+          <li><span class="ck">✓</span> Enter code in 6 individual digit boxes</li>
+          <li><span class="ck">✓</span> Account auto-created on first login</li>
+          <li><span class="ck">✓</span> OTP expires in 10 minutes — one use only</li>
+          <li><span class="ck">✓</span> Dev mode shows OTP on-screen (no SMTP needed)</li>
+        </ul>
+      </div>
+      <div class="fg">
+        <div class="fg-head">🛒 Shop &amp; Cart</div>
+        <ul>
+          <li><span class="ck">✓</span> Browse all approved products with images and prices</li>
+          <li><span class="ck">✓</span> Search by product name or description</li>
+          <li><span class="ck">✓</span> Paginated product grid (12 per page, circular buttons)</li>
+          <li><span class="ck">✓</span> Add to cart, update quantity, remove items</li>
+          <li><span class="ck">✓</span> Cart stored in session — persists across pages</li>
+          <li><span class="ck">✓</span> Cart count in sticky navbar updates instantly</li>
+        </ul>
+      </div>
+      <div class="fg">
+        <div class="fg-head">📦 Orders</div>
+        <ul>
+          <li><span class="ck">✓</span> Checkout with delivery address</li>
+          <li><span class="ck">✓</span> Order placed — status starts as Pending</li>
+          <li><span class="ck">✓</span> Order history page with 5 status tabs</li>
+          <li><span class="ck">✓</span> Tabs: All / Pending / In Process / Completed / Cancelled</li>
+          <li><span class="ck">✓</span> Tab shows live count of orders in each status</li>
+          <li><span class="ck">✓</span> Pagination preserves active status filter</li>
+        </ul>
+      </div>
+      <div class="fg">
+        <div class="fg-head">🎨 UI Details</div>
+        <ul>
+          <li><span class="ck">✓</span> Sticky white navbar — stays at top as you scroll</li>
+          <li><span class="ck">✓</span> Green topbar scrolls away with the hero image</li>
+          <li><span class="ck">✓</span> Owl Carousel on home page — arrows completely removed</li>
+          <li><span class="ck">✓</span> Custom circular pill pagination buttons</li>
+          <li><span class="ck">✓</span> Loading spinner hides until JS is ready</li>
+          <li><span class="ck">✓</span> Fully responsive (Bootstrap 5 breakpoints)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 04 — Key Flows</p>
+    <h2 class="sec-title">How the Two Core Flows Work</h2>
+    <div class="flows">
+      <div class="flow">
+        <div class="flow-ttl">🔑 OTP Login — End to End</div>
+        <div class="fs">
+          <div class="fstep"><div class="fsl"><div class="fdot">1</div><div class="fline"></div></div><div class="fc"><strong>Customer enters email</strong><span>OtpLoginController validates format</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">2</div><div class="fline"></div></div><div class="fc"><strong>OTP generated &amp; saved</strong><span>6 digits, stored in otp_tokens with expires_at</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">3</div><div class="fline"></div></div><div class="fc"><strong>Email dispatched</strong><span>OtpMail sent via MailHog (dev) or real SMTP (prod)</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">4</div><div class="fline"></div></div><div class="fc"><strong>Customer enters code</strong><span>6 digit boxes, auto-focus, paste support</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">5</div><div class="fline"></div></div><div class="fc"><strong>Token deleted immediately</strong><span>Cannot be reused. User::firstOrCreate() auto-registers new customers.</span></div></div>
+        </div>
+      </div>
+      <div class="flow">
+        <div class="flow-ttl">🛒 Cart → Order Flow</div>
+        <div class="fs">
+          <div class="fstep"><div class="fsl"><div class="fdot">1</div><div class="fline"></div></div><div class="fc"><strong>Add to cart</strong><span>CartController stores product ID + qty in session array</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">2</div><div class="fline"></div></div><div class="fc"><strong>View cart</strong><span>Loads product details for session IDs — 1 query with whereIn</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">3</div><div class="fline"></div></div><div class="fc"><strong>Checkout</strong><span>Address form, order total calculated from session cart</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">4</div><div class="fline"></div></div><div class="fc"><strong>Order created</strong><span>Order + OrderItems saved to DB, cart session cleared</span></div></div>
+          <div class="fstep"><div class="fsl"><div class="fdot">5</div></div><div class="fc"><strong>Track on orders page</strong><span>Filter by status tab, paginated with ?status= preserved</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 05 — Security</p>
+    <h2 class="sec-title">Security Measures</h2>
+    <table class="tbl">
+      <thead><tr><th>Threat</th><th>How it is stopped</th></tr></thead>
+      <tbody>
+        <tr><td>OTP Replay</td><td>Token deleted immediately on successful verification. Hard 10-minute expiry enforced by expires_at column check.</td></tr>
+        <tr><td>SQL Injection</td><td>All queries through Eloquent parameterised builder — user-supplied ?search= value is never concatenated into raw SQL.</td></tr>
+        <tr><td>CSRF</td><td>@csrf on every cart/checkout/order form. VerifyCsrfToken middleware rejects requests without a valid token.</td></tr>
+        <tr><td>Stored XSS</td><td>Product descriptions strip_tagged on save. Blade {{ }} HTML-encodes all output. {!! !!} only used on pre-sanitised fields.</td></tr>
+        <tr><td>Session Fixation</td><td>session()->regenerate() on OTP login success. invalidate() + regenerateToken() on logout.</td></tr>
+        <tr><td>Privilege Escalation</td><td>Customers cannot access /products, /admin routes. CheckRole middleware + auth guard enforced on all protected routes.</td></tr>
+        <tr><td>Sensitive Env Vars</td><td>.env gitignored. .env.example committed (no secrets). Docker image never exposes .env. Vercel env vars set via dashboard.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 06 — Deployment</p>
+    <h2 class="sec-title">Local &amp; Vercel Deployment</h2>
+    <div class="setup">
+      <div class="setup-bar">BASH — Local Docker setup</div>
+      <pre><span class="sc"># Clone and enter</span>
+<span class="scmd">git clone https://github.com/vasant24konar/FruGo.git && cd FruGo</span>
+
+<span class="sc"># Copy env (no edits needed for local Docker)</span>
+<span class="scmd">cp .env.example .env && bash deploy.sh</span>
+
+<span class="surl">http://localhost:8080</span>      <span class="sc"># FruGo shop</span>
+<span class="surl">http://localhost:8025</span>      <span class="sc"># MailHog — see OTP emails here</span></pre>
+    </div>
+    <p style="margin-bottom:16px;font-size:.9rem;color:var(--muted)"><strong style="color:var(--text)">Vercel Production:</strong> Requires external MySQL (PlanetScale) + transactional SMTP (Resend/Mailgun). Set these env vars in Vercel dashboard:</p>
+    <div class="vercel-grid">
+      <div class="vc"><p class="vc-label">Required</p><p class="vc-val">APP_KEY, APP_ENV=production</p><p class="vc-note">Generate key with php artisan key:generate --show</p></div>
+      <div class="vc"><p class="vc-label">Database</p><p class="vc-val">DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD</p><p class="vc-note">Point to PlanetScale or Railway MySQL</p></div>
+      <div class="vc"><p class="vc-label">Session/Cache</p><p class="vc-val">SESSION_DRIVER=cookie, CACHE_STORE=array</p><p class="vc-note">Serverless needs no file writes</p></div>
+      <div class="vc"><p class="vc-label">Mail</p><p class="vc-val">MAIL_MAILER=smtp + host/port/user/pass</p><p class="vc-note">Use Resend, Mailgun, or SendGrid</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 07 — Test Accounts</p>
+    <h2 class="sec-title">How to Test the Shop</h2>
+    <table class="creds">
+      <thead><tr><th>How to Login</th><th>Method</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Customer</td><td>OTP — any email address</td><td>Go to /login-otp, enter any email, check MailHog at localhost:8025 for the code</td></tr>
+        <tr><td>Admin</td><td>admin@example.com / Admin@1234</td><td>Can update order statuses to test the status tabs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <p class="sec-label">// 08 — Repository</p>
+    <h2 class="sec-title">Source Code</h2>
+    <div class="repo">
+      <span class="repo-icon">🛒</span>
+      <p class="repo-name">FruGo</p>
+      <p class="repo-desc">Laravel 11 customer shop — OTP auth, cart, checkout, order tracking, sticky nav, Vercel-ready.</p>
+      <span class="repo-link">github.com/vasant24konar/FruGo</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <strong>FruGo</strong> — Built with Laravel 11 · PHP 8.2 · MySQL 8 · Docker · Vercel<br>
+  <span style="margin-top:6px;display:block">by <strong>Vasant Konar</strong> — vasant@crew.inc</span>
+</footer>
+</body>
+</html>
