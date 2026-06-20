@@ -4,6 +4,6 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "php artisan config:cache && php artisan route:cache && php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan serve --host=0.0.0.0 --port=$PORT"
+    "startCommand": "sleep 10 && php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan serve --host=0.0.0.0 --port=$PORT"
   }
 }
