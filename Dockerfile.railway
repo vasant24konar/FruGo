@@ -19,9 +19,8 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 COPY . .
 
 RUN composer dump-autoload --optimize --no-dev \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache \
-    && cp .env.example .env
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 8080
 
-CMD sh -c "php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+CMD ["/bin/sh", "-c", "touch /var/www/.env && php artisan migrate --force && php artisan db:seed --force --class=UserSeeder && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
